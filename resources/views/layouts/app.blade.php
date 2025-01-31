@@ -102,8 +102,25 @@
 <body>
     <div id="app">
 
+        {{-- Header --}}
+        <div class="bg-light py-2 d-none d-md-block">
+            <div class="container d-flex justify-content-between">
+                <div>
+                    <a href="{{ route('landing') }}" class="text-muted me-3">Beranda</a>
+                    <a href="{{ route('products.all') }}" class="text-muted me-3">Produk</a>
+                    <a href="#" class="text-muted">Bantuan</a>
+                </div>
+                <div>
+                    <a href="#" class="text-muted me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-muted me-3"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="text-muted"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        {{-- Navbar --}}
         <nav class="navbar navbar-expand-lg navbar-custom">
-            <div class="container-fluid">
+            <div class="container d-flex justify-content-center">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
@@ -127,7 +144,7 @@
                     </div>
 
                     <!-- Tombol Masuk & Daftar di Kanan -->
-                    <div class="d-flex justify-items-center">
+                    <div class="d-flex justify-items-center align-items-center">
                         <a href="" class="btn position-relative me-3">
                             <i class="bi bi-cart"></i>
                             @if (session('cart') && count(session('cart')) > 0)
@@ -151,7 +168,7 @@
                                 <a href="{{ route('register') }}" class="btn btn-primary">Daftar</a>
                             @endif
                         @else
-                            <li class="nav-item dropdown">
+                            <a class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
@@ -168,7 +185,7 @@
                                         @csrf
                                     </form>
                                 </div>
-                            </li>
+                            </a>
                         @endguest
                     </div>
                 </div>
