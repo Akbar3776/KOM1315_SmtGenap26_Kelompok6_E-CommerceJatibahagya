@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('admins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('role', ['super admin', 'staff', 'customer support']);
+            $table->enum('role', ['super_admin', 'staff', 'customer_support']);
             $table->timestamps();
         });
     }

@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'phone',
         'address',
-        'role',
+        'role', // customer | admin
     ];
 
     /**
