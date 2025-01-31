@@ -23,8 +23,21 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'description', 'price', 'stock', 'category_id', 'brand_id', 'image', 'status',
+        'name',
+        'description',
+        'price',
+        'stock',
+        'category_id',
+        'brand_id',
+        'image',
+        'status',
     ];
+
+    public function setImageAttribute($value)
+    {
+        $this->attributes['image'] = $value ?? 'images/dummy/dummy-' . rand(1, 5) . '.png';
+    }
+
 
     public function category()
     {
