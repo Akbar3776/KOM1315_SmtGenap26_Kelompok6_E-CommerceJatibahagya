@@ -430,79 +430,110 @@
         <div class="container">
             <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
                 <!-- Pengantaran -->
-                <div class="col d-flex align-items-start" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="col d-flex align-items-start flex-column" data-aos="zoom-in" data-aos-duration="1000">
                     <div class="icon-square bg-light text-primary flex-shrink-0 me-3 p-3 rounded">
                         <i class="bi bi-truck"></i>
                     </div>
                     <div>
                         <h4 class="text-capitalize">Pengantaran</h4>
                         <p>
-                            Belanja lebih mudah dan praktis. Kami siap mengantar langsung ke
-                            rumah Anda dengan aman dan cepat.
+                            Belanja lebih mudah dan praktis. Kami siap mengantar langsung ke rumah Anda dengan aman dan
+                            cepat.
                         </p>
-                        <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                    </div>
+                    <!-- Tombol di bagian bawah -->
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
                     </div>
                 </div>
 
                 <!-- Perakitan -->
-                <div class="col d-flex align-items-start" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="col d-flex align-items-start flex-column" data-aos="zoom-in" data-aos-duration="1000">
                     <div class="icon-square bg-light text-primary flex-shrink-0 me-3 p-3 rounded">
                         <i class="bi bi-tools"></i>
                     </div>
                     <div>
                         <h4 class="text-capitalize">Perakitan</h4>
                         <p>
-                            Jangan repot merakit sendiri. Kami menyediakan layanan perakitan
-                            agar furniture Anda siap digunakan.
+                            Jangan repot merakit sendiri. Kami menyediakan layanan perakitan agar furniture Anda siap
+                            digunakan.
                         </p>
-                        <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                    </div>
+                    <!-- Tombol di bagian bawah -->
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
                     </div>
                 </div>
 
                 <!-- Click and Collect -->
-                <div class="col d-flex align-items-start" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="col d-flex align-items-start flex-column" data-aos="zoom-in" data-aos-duration="1000">
                     <div class="icon-square bg-light text-primary flex-shrink-0 me-3 p-3 rounded">
                         <i class="bi bi-bag-check"></i>
                     </div>
                     <div>
                         <h4 class="text-capitalize">Click and Collect</h4>
                         <p>
-                            Pesan online dan ambil langsung di toko kami tanpa perlu
-                            menunggu lama. Hemat waktu dan lebih efisien.
+                            Pesan online dan ambil langsung di toko kami tanpa perlu menunggu lama. Hemat waktu dan lebih
+                            efisien.
                         </p>
-                        <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                    </div>
+                    <!-- Tombol di bagian bawah -->
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
                     </div>
                 </div>
 
                 <!-- Desain Interior -->
-                <div class="col d-flex align-items-start" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="col d-flex align-items-start flex-column" data-aos="zoom-in" data-aos-duration="1000">
                     <div class="icon-square bg-light text-primary flex-shrink-0 me-3 p-3 rounded">
                         <i class="bi bi-house-heart"></i>
                     </div>
                     <div>
                         <h4 class="text-capitalize">Desain Interior</h4>
                         <p>
-                            Wujudkan harmoni ruang impian Anda bersama kami. Konsultasikan
-                            desain terbaik untuk hunian Anda.
+                            Wujudkan harmoni ruang impian Anda bersama kami. Konsultasikan desain terbaik untuk hunian Anda.
                         </p>
-                        <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                    </div>
+                    <!-- Tombol di bagian bawah -->
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
                     </div>
                 </div>
 
                 <!-- Pembayaran -->
-                <div class="col d-flex align-items-start" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="col d-flex align-items-start flex-column" data-aos="zoom-in" data-aos-duration="1000">
                     <div class="icon-square bg-light text-primary flex-shrink-0 me-3 p-3 rounded">
                         <i class="bi bi-credit-card"></i>
                     </div>
                     <div>
                         <h4 class="text-capitalize">Pembayaran</h4>
                         <p>
-                            Nikmati kemudahan transaksi dengan berbagai metode pembayaran
-                            yang aman dan nyaman untuk Anda.
+                            Nikmati kemudahan transaksi dengan berbagai metode pembayaran yang aman dan nyaman untuk Anda.
                         </p>
-                        <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                    </div>
+                    <!-- Tombol di bagian bawah -->
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
                     </div>
                 </div>
+
+                <!-- Pusat Bantuan -->
+                <div class="col d-flex align-items-start flex-column" data-aos="zoom-in" data-aos-duration="1000">
+                    <div class="icon-square bg-light text-primary flex-shrink-0 me-3 p-3 rounded">
+                        <i class="bi bi-question-circle"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-capitalize">Pusat Bantuan</h4>
+                        <p>
+                            Temukan jawaban atas pertanyaan Anda atau hubungi kami untuk bantuan lebih lanjut.
+                        </p>
+                    </div>
+                    <!-- Tombol di bagian bawah -->
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-sm btn-primary w-100">Hubungi Kami</a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>

@@ -22,6 +22,18 @@ class CartController extends Controller
     }
 
     /**
+     * Menampilkan halaman keranjang belanja.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function getCheckoutPage()
+    {
+        $cartItems = Cart::where('user_id', auth()->id())->get();
+
+        return view('transactions.checkout', compact('cartItems'));
+    }
+
+    /**
      * Mengambil data keranjang dalam format JSON.
      *
      * @return \Illuminate\Http\JsonResponse

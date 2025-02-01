@@ -17,7 +17,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/products/{productId}', [App\Http\Controllers\ProductController::class, 'getDetail'])->name('products.detail');
 
     // Cart
-    Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart');
+    Route::get('/checkout', [App\Http\Controllers\CartController::class, 'getCheckoutPage'])->name('checkout.index');
 
     // Halaman keranjang
     Route::get('/cart', [App\Http\Controllers\CartController::class, 'getCartPage'])->name('cart.index');

@@ -61,7 +61,7 @@
                 </h4>
             </div>
             <div class="col-12 col-md-6 text-end">
-                <a href="#" class="btn btn-success">Checkout</a>
+                <a href="#" class="btn btn-primary">Checkout</a>
             </div>
         </div>
 

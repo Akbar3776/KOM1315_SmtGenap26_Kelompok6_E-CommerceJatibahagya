@@ -24,9 +24,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 
     <!-- Scripts -->
-    @vite(['resources/js/app.js'])
+    {{-- @vite(['resources/js/app.js']) --}}
 
-    <style>
+    <style type="text/css">
         body {
             font-family: "Montserrat", sans-serif;
         }
@@ -209,17 +209,17 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS (Pastikan ini ada sebelum script custom-mu) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <!-- Jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS (Pastikan ini ada sebelum script custom-mu) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     {{-- AOS JS --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
     {{-- AOS Init --}}
-    <script>
+    <script type="text/javascript">
         AOS.init();
     </script>
 
