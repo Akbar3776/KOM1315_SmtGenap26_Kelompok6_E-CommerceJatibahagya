@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mt-4">
-        
+
         {{-- Tombol Back --}}
         <a href="{{ url()->previous() }}" class="btn btn-secondary mb-4">
             <i class="bi bi-arrow-left-circle"></i> Kembali
@@ -35,7 +35,7 @@
 
                 {{-- Tambahkan ke Keranjang --}}
                 <div class="mt-3">
-                    <button class="btn btn-primary w-100 py-2">Tambah ke Keranjang</button>
+                    <button id="addToCartBtn" class="btn btn-primary w-100 py-2">Tambah ke Keranjang</button>
                 </div>
             </div>
         </div>
@@ -110,6 +110,64 @@
 
                 <button type="submit" class="btn btn-primary w-100">Kirim Ulasan</button>
             </form> --}}
+
+            {{-- Toast --}}
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-success text-white">
+                        <strong class="me-auto text-white">Sukses</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Produk berhasil ditambahkan ke keranjang!
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $("#addToCartBtn").click(function() {
+                var productId = {{ $product->id }};
+                var quantity = 1;
+
+                $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        product_id: productId,
+                        quantity: quantity
+                    },
+                    success: function(response) {
+                        showToast("Produk berhasil ditambahkan ke keranjang!");
+                    },
+                    error: function(xhr) {
+                        showToast("Gagal menambahkan ke keranjang!", true);
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            function showToast(message, isError = false) {
+                var toast = $("#liveToast");
+                toast.find(".toast-body").text(message);
+
+                if (isError) {
+                    toast.find(".toast-header strong").text("Error");
+                    toast.find(".toast-header").addClass("bg-danger text-white");
+                } else {
+                    toast.find(".toast-header strong").text("Sukses");
+                    toast.find(".toast-header").removeClass("bg-danger text-white");
+                }
+
+                var bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+            }
+        });
+    </script>
 @endsection

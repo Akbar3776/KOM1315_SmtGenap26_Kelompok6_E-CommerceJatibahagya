@@ -145,19 +145,15 @@
 
                     <!-- Tombol Masuk & Daftar di Kanan -->
                     <div class="d-flex justify-items-center align-items-center">
-                        <a href="" class="btn position-relative me-3">
+                        <a href="{{ route('cart.index') }}" class="btn position-relative me-3">
                             <i class="bi bi-cart"></i>
-                            @if (session('cart') && count(session('cart')) > 0)
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ count(session('cart')) }}
-                                </span>
-                            @else
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    0
-                                </span>
-                            @endif
+                            @php
+                                $cartCount = \App\Models\Cart::where('user_id', Auth::id())->count();
+                            @endphp
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $cartCount }}
+                            </span>
                         </a>
                         @guest
                             @if (Route::has('login'))
@@ -193,10 +189,12 @@
             </div>
         </nav>
 
+        {{-- Content --}}
         <main class="py-0 d-flex flex-column min-vh-100">
             @yield('content')
         </main>
 
+        {{-- Footer --}}
         <div class="container">
             <footer class="py-3 my-4">
                 <ul class="nav justify-content-center border-bottom pb-3 mb-3">
@@ -211,12 +209,21 @@
         </div>
     </div>
 
-    <!-- AOS JS -->
+    <!-- Bootstrap JS (Pastikan ini ada sebelum script custom-mu) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {{-- AOS JS --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
+    {{-- AOS Init --}}
     <script>
         AOS.init();
     </script>
+
+    @yield('scripts')
 </body>
 
 </html>

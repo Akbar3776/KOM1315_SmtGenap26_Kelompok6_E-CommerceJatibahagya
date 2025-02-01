@@ -18,4 +18,15 @@ Route::middleware(['auth'])->group(function () {
 
     // Cart
     Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart');
+
+    // Halaman keranjang
+    Route::get('/cart', [App\Http\Controllers\CartController::class, 'getCartPage'])->name('cart.index');
+
+    // API untuk operasi pada keranjang (JSON response)
+    Route::prefix('cart')->group(function () {
+        Route::get('/items', [App\Http\Controllers\CartController::class, 'getCart'])->name('cart.get');
+        Route::post('/add', [App\Http\Controllers\CartController::class, 'addCart'])->name('cart.add');
+        Route::put('/update/{id}', [App\Http\Controllers\CartController::class, 'updateCart'])->name('cart.update');
+        Route::delete('/remove/{id}', [App\Http\Controllers\CartController::class, 'removeCart'])->name('cart.remove');
+    });
 });
