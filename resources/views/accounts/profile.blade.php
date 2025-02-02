@@ -10,6 +10,7 @@
 
         <!-- Profile Section -->
         <div class="col-md-9 mb-3">
+            <h5 class="mb-2">Pengaturan Profil</h5>
             <div class="card">
                 <div class="card-header">Profil</div>
                 <div class="card-body">
@@ -38,11 +39,6 @@
                         <div class="mb-3">
                             <label for="phone" class="form-label">Nomor Telepon</label>
                             <input type="text" name="phone" class="form-control" value="{{ old('phone', auth()->user()->phone) }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Alamat</label>
-                            <textarea name="address" class="form-control" rows="3">{{ old('address', auth()->user()->address) }}</textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Simpan Perubahan</button>

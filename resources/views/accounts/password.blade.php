@@ -10,6 +10,7 @@
 
         <!-- Change Password Section -->
         <div class="col-md-9 mb-3">
+            <h5 class="mb-2">Kata Sandi</h5>
             <div class="card">
                 <div class="card-header">Ganti Kata Sandi</div>
                 <div class="card-body">

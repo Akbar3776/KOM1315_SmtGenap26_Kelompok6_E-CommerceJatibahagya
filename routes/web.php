@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\District;
+use App\Models\Regency;
+use App\Models\Village;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +33,27 @@ Route::middleware(['auth'])->group(function () {
     // Password
     Route::get('/account/password', [App\Http\Controllers\ProfileController::class, 'showChangePasswordForm'])->name('password.change');
     Route::put('/account/password/update', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
+
+    // Address
+    Route::get('address', [App\Http\Controllers\UserAddressController::class, 'index'])->name('address.index');
+    Route::get('address/create', [App\Http\Controllers\UserAddressController::class, 'create'])->name('address.create');
+    Route::post('address', [App\Http\Controllers\UserAddressController::class, 'store'])->name('address.store');
+    Route::get('address/{address}/edit', [App\Http\Controllers\UserAddressController::class, 'edit'])->name('address.edit');
+    Route::put('address/{address}', [App\Http\Controllers\UserAddressController::class, 'update'])->name('address.update');
+    Route::delete('address/{address}', [App\Http\Controllers\UserAddressController::class, 'destroy'])->name('address.destroy');
+
+    // API Address
+    Route::get('api/regencies/{province_id}', function ($province_id) {
+        return Regency::where('province_id', $province_id)->get();
+    });
+    
+    Route::get('api/districts/{regency_id}', function ($regency_id) {
+        return District::where('regency_id', $regency_id)->get();
+    });
+    
+    Route::get('api/villages/{district_id}', function ($district_id) {
+        return Village::where('district_id', $district_id)->get();
+    });
 
     // API untuk operasi pada keranjang (JSON response)
     Route::prefix('cart')->group(function () {

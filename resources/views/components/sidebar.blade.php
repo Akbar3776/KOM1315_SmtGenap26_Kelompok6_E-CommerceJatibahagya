@@ -1,4 +1,4 @@
-<h4>Akun Saya</h4>
+<h5 class="mb-2">Akun Saya</h5>
 <ul class="list-group">
     <li class="list-group-item {{ request()->routeIs('cart.index') ? 'active' : '' }}">
         <a href="{{ route('cart.index') }}"
@@ -12,6 +12,10 @@
     <li class="list-group-item {{ request()->routeIs('profile.show') ? 'active' : '' }}">
         <a href="{{ route('profile.show') }}"
             class="text-decoration-none {{ request()->routeIs('profile.show') ? 'text-white' : '' }}">Profil</a>
+    </li>
+    <li class="list-group-item {{ request()->routeIs('address.index') ? 'active' : '' }}">
+        <a href="{{ route('address.index') }}"
+            class="text-decoration-none {{ request()->routeIs('address.index') ? 'text-white' : '' }}">Alamat</a>
     </li>
     <li class="list-group-item {{ request()->routeIs('password.change') ? 'active' : '' }}">
         <a href="{{ route('password.change') }}"
