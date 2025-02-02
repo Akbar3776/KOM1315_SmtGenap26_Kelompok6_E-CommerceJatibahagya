@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                 'name' => $admin['name'],
                 'email' => $admin['email'],
                 'password' => Hash::make('password'),
-                'phone' => '0812' . rand(10000000, 99999999), // Phone unik
+                'phone' => '0812' . rand(10000000, 99999999),
                 'role' => $admin['role'],
             ]);
 
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
                 'name' => $customer['name'],
                 'email' => $customer['email'],
                 'password' => Hash::make('password'),
-                'phone' => '0813' . rand(10000000, 99999999), // Phone unik
+                'phone' => '0813' . rand(10000000, 99999999),
                 'role' => 'customer',
             ]);
 
