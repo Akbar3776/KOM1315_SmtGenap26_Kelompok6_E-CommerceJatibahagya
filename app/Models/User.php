@@ -22,7 +22,6 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'address',
         'role', // customer | admin
     ];
 
@@ -52,5 +51,10 @@ class User extends Authenticatable
     public function admin()
     {
         return $this->hasOne(Admin::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
     }
 }
