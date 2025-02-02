@@ -27,39 +27,33 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse (auth()->user()->addresses as $address)
-                                <tr>
-                                    <td>
-                                        {{ ucwords(
-                                            strtolower(
-                                                sprintf(
-                                                    '%s, %s, %s, %s, %s, %d',
-                                                    ucwords($address->full_address),
-                                                    $address->village->name,
-                                                    $address->district->name,
-                                                    $address->regency->name,
-                                                    $address->province->name,
-                                                    $address->postal_code
-                                                )
-                                            )
-                                        ) }}
-                                    </td>                                    
-                                    <td>
-                                        <a href="{{ route('address.edit', $address->id) }}"
-                                            class="btn btn-warning btn-sm">Ubah</a>
-                                        <form action="{{ route('address.destroy', $address->id) }}" method="POST"
-                                            class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="2" class="text-center">Belum ada alamat</td>
-                                </tr>
-                            @endforelse
+                            @if (auth()->user()->addresses->isEmpty())
+                                <p class="text-muted">Kamu belum memiliki alamat. Silakan tambahkan alamat terlebih dahulu.
+                                </p>
+                                <a href="{{ route('address.create') }}" class="btn btn-outline-primary">Tambah Alamat</a>
+                            @else
+                                @foreach (auth()->user()->addresses as $address)
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="address_id"
+                                            id="address{{ $address->id }}" value="{{ $address->id }}">
+                                        <label class="form-check-label" for="address{{ $address->id }}">
+                                            {{ ucwords(
+                                                strtolower(
+                                                    sprintf(
+                                                        '%s, %s, %s, %s, %s, %d',
+                                                        ucwords($address->full_address),
+                                                        $address->village->name,
+                                                        $address->district->name,
+                                                        $address->regency->name,
+                                                        $address->province->name,
+                                                        $address->postal_code,
+                                                    ),
+                                                ),
+                                            ) }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
 

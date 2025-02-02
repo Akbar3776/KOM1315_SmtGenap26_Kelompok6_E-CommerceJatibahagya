@@ -26,10 +26,27 @@
                                     value="{{ old('phone', auth()->user()->phone) }}">
                             </div>
 
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Alamat Lengkap</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" required>{{ old('address', auth()->user()->address) }}</textarea>
-                            </div>
+                            @foreach (auth()->user()->addresses as $address)
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="address_id"
+                                        id="address{{ $address->id }}" value="{{ $address->id }}">
+                                    <label class="form-check-label" for="address{{ $address->id }}">
+                                        {{ ucwords(
+                                            strtolower(
+                                                sprintf(
+                                                    '%s, %s, %s, %s, %s, %d',
+                                                    ucwords($address->full_address),
+                                                    $address->village->name,
+                                                    $address->district->name,
+                                                    $address->regency->name,
+                                                    $address->province->name,
+                                                    $address->postal_code
+                                                )
+                                            )
+                                        ) }}
+                                    </label>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
 
@@ -47,14 +64,9 @@
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="radio" name="payment_method" id="transfer"
                                     value="Transfer Bank">
-                                <label class="form-check-label" for="transfer">Transfer Bank</label>
+                                <label class="form-check-label" for="transfer">Transfer Bank Virtual Account (VA)</label>
                             </div>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" id="ewallet"
-                                    value="E-Wallet">
-                                <label class="form-check-label" for="ewallet">E-Wallet (GoPay, OVO, Dana)</label>
-                            </div>
                         </div>
                     </div>
                 </div>
