@@ -8,19 +8,28 @@ Auth::routes();
 // Route untuk landing page (terbuka untuk semua)
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
 
+// Produk
+Route::get('/products', [App\Http\Controllers\ProductController::class, 'getAll'])->name('products.all');
+Route::get('/products/{productId}', [App\Http\Controllers\ProductController::class, 'getDetail'])->name('products.detail');
+
 // Group route yang membutuhkan autentikasi
 Route::middleware(['auth'])->group(function () {
+    // Home
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-    // Produk
-    Route::get('/products', [App\Http\Controllers\ProductController::class, 'getAll'])->name('products.all');
-    Route::get('/products/{productId}', [App\Http\Controllers\ProductController::class, 'getDetail'])->name('products.detail');
 
     // Cart
     Route::get('/checkout', [App\Http\Controllers\CartController::class, 'getCheckoutPage'])->name('checkout.index');
 
     // Halaman keranjang
     Route::get('/cart', [App\Http\Controllers\CartController::class, 'getCartPage'])->name('cart.index');
+
+    // Profile
+    Route::get('/account/profile', [App\Http\Controllers\ProfileController::class, 'showProfileForm'])->name('profile.show');
+    Route::put('/account/profile/update', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('profile.update');
+
+    // Password
+    Route::get('/account/password', [App\Http\Controllers\ProfileController::class, 'showChangePasswordForm'])->name('password.change');
+    Route::put('/account/password/update', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 
     // API untuk operasi pada keranjang (JSON response)
     Route::prefix('cart')->group(function () {
