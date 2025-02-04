@@ -28,7 +28,7 @@ class CartController extends Controller
      */
     public function getCheckoutPage()
     {
-        $cartItems = Cart::where('user_id', auth()->id())->get();
+        $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
 
         return view('transactions.checkout', compact('cartItems'));
     }
@@ -58,13 +58,31 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
+        $product = Product::findOrFail($request->product_id);
         $cartItem = Cart::where('user_id', Auth::id())
             ->where('product_id', $request->product_id)
             ->first();
 
+        // Jika produk sudah ada di keranjang, cek jumlahnya
         if ($cartItem) {
+            $newQuantity = $cartItem->quantity + $request->quantity;
+
+            if ($newQuantity > $product->stock) {
+                return response()->json([
+                    'message' => 'Jumlah melebihi stok yang tersedia',
+                    'available_stock' => $product->stock
+                ], 400);
+            }
+
             $cartItem->increment('quantity', $request->quantity);
         } else {
+            if ($request->quantity > $product->stock) {
+                return response()->json([
+                    'message' => 'Jumlah melebihi stok yang tersedia',
+                    'available_stock' => $product->stock
+                ], 400);
+            }
+
             Cart::create([
                 'user_id' => Auth::id(),
                 'product_id' => $request->product_id,
@@ -74,6 +92,7 @@ class CartController extends Controller
 
         return response()->json(['message' => 'Produk ditambahkan ke keranjang'], 201);
     }
+
 
     /**
      * Memperbarui jumlah produk dalam keranjang.
@@ -89,10 +108,21 @@ class CartController extends Controller
         ]);
 
         $cartItem = Cart::where('user_id', Auth::id())->findOrFail($id);
+        $product = Product::findOrFail($cartItem->product_id);
+
+        // Cek apakah jumlah baru melebihi stok yang tersedia
+        if ($request->quantity > $product->stock) {
+            return response()->json([
+                'message' => 'Jumlah melebihi stok yang tersedia',
+                'available_stock' => $product->stock
+            ], 400);
+        }
+
         $cartItem->update(['quantity' => $request->quantity]);
 
         return response()->json(['message' => 'Jumlah produk diperbarui'], 200);
     }
+
 
     /**
      * Menghapus produk dari keranjang.

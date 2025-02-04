@@ -4,7 +4,17 @@
     <div class="container mt-4">
         <h4 class="mb-4">Checkout</h4>
 
-        <form action="" method="POST">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('cart.checkout.store') }}" method="POST">
             @csrf
 
             <div class="row">
@@ -40,9 +50,9 @@
                                                     $address->district->name,
                                                     $address->regency->name,
                                                     $address->province->name,
-                                                    $address->postal_code
-                                                )
-                                            )
+                                                    $address->postal_code,
+                                                ),
+                                            ),
                                         ) }}
                                     </label>
                                 </div>
@@ -80,10 +90,18 @@
                                 @foreach ($cartItems as $cartItem)
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>{{ $cartItem->product->name }} ({{ $cartItem->quantity }})</span>
-                                        <span>Rp
+                                        <span class="text-nowrap">Rp
                                             {{ number_format($cartItem->quantity * $cartItem->product->price, 0, ',', '.') }}</span>
                                     </li>
                                 @endforeach
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Ongkos Kirim</span>
+                                    <span>Rp 75.000</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Biaya Layanan</span>
+                                    <span>Rp 2.000</span>
+                                </li>
                             </ul>
 
                             <h4 class="fw-bold text-end">

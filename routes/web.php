@@ -23,11 +23,15 @@ Route::middleware(['auth'])->group(function () {
     // Home
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+    // Checkout Success
+    Route::get('/order/success/{order}', [App\Http\Controllers\OrderController::class, 'success'])->name('order.success');
+
     // Cart
     Route::prefix('cart')->name('cart.')->group(function () {
         Route::get('/', [App\Http\Controllers\CartController::class, 'getCartPage'])->name('index');
         Route::get('/checkout', [App\Http\Controllers\CartController::class, 'getCheckoutPage'])->name('checkout');
-        
+        Route::post('/checkout', [App\Http\Controllers\OrderController::class, 'checkout'])->name('checkout.store');
+
         // API untuk operasi pada keranjang (JSON response)
         Route::get('/items', [App\Http\Controllers\CartController::class, 'getCart'])->name('get');
         Route::post('/add', [App\Http\Controllers\CartController::class, 'addCart'])->name('add');
@@ -39,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('account')->name('profile.')->group(function () {
         Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'showProfileForm'])->name('show');
         Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('update');
-        
+
         // Password
         Route::get('/password', [App\Http\Controllers\ProfileController::class, 'showChangePasswordForm'])->name('password.change');
         Route::put('/password/update', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');

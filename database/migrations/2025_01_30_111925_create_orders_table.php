@@ -14,7 +14,11 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->decimal('total_price', 8, 2);
+            $table->foreignId('user_address_id')->constrained('user_addresses')->onDelete('cascade');
+            $table->decimal('total_order', 10, 2); // Total harga barang sebelum biaya lain
+            $table->decimal('total_shipping', 10, 2)->default(0); // Biaya pengiriman
+            $table->decimal('total_fee', 10, 2)->default(0); // Biaya tambahan seperti pajak atau admin
+            $table->decimal('amount', 10, 2); // Jumlah akhir yang harus dibayar (total_order + total_shipping + total_fee)
             $table->enum('status', ['pending', 'paid', 'shipped', 'completed', 'canceled'])->default('pending');
             $table->enum('payment_status', ['unpaid', 'paid', 'refunded'])->default('unpaid');
             $table->text('shipping_address');
