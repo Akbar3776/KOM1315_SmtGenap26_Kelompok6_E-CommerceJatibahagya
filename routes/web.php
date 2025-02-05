@@ -8,48 +8,53 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-// Route untuk landing page (terbuka untuk semua)
+// ✅ Landing Page (Terbuka untuk semua)
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
 
-// Produk
+// ✅ Produk
 Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [App\Http\Controllers\ProductController::class, 'getAll'])->name('all');
     Route::get('/{productId}', [App\Http\Controllers\ProductController::class, 'getDetail'])->name('detail');
 });
 
-// Group route yang membutuhkan autentikasi
+// ✅ Route yang membutuhkan autentikasi
 Route::middleware(['auth'])->group(function () {
 
-    // Home
+    // 🏠 Dashboard / Home
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-    // Checkout Success
-    Route::get('/order/success/{order}', [App\Http\Controllers\OrderController::class, 'success'])->name('order.success');
-
-    // Cart
+    // ✅ Keranjang Belanja (Cart)
     Route::prefix('cart')->name('cart.')->group(function () {
         Route::get('/', [App\Http\Controllers\CartController::class, 'getCartPage'])->name('index');
         Route::get('/checkout', [App\Http\Controllers\CartController::class, 'getCheckoutPage'])->name('checkout');
         Route::post('/checkout', [App\Http\Controllers\OrderController::class, 'checkout'])->name('checkout.store');
 
-        // API untuk operasi pada keranjang (JSON response)
+        // 🔄 API Cart (JSON response)
         Route::get('/items', [App\Http\Controllers\CartController::class, 'getCart'])->name('get');
         Route::post('/add', [App\Http\Controllers\CartController::class, 'addCart'])->name('add');
         Route::put('/update/{id}', [App\Http\Controllers\CartController::class, 'updateCart'])->name('update');
         Route::delete('/remove/{id}', [App\Http\Controllers\CartController::class, 'removeCart'])->name('remove');
     });
 
-    // Profile
+    // ✅ Pemesanan (Orders)
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [App\Http\Controllers\OrderController::class, 'getOrders'])->name('index');
+        Route::get('/{id}', [App\Http\Controllers\OrderController::class, 'getOrderDetail'])->name('detail');
+        Route::post('/{id}/cancel', [App\Http\Controllers\OrderController::class, 'cancelOrder'])->name('cancel');
+        Route::get('/success/{order}', [App\Http\Controllers\OrderController::class, 'success'])->name('success');
+    });
+
+    // ✅ Profil & Akun Pengguna
     Route::prefix('account')->name('profile.')->group(function () {
         Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'showProfileForm'])->name('show');
         Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('update');
 
-        // Password
+        // 🔐 Ubah Password
         Route::get('/password', [App\Http\Controllers\ProfileController::class, 'showChangePasswordForm'])->name('password.change');
         Route::put('/password/update', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
     });
 
-    // Address
+    // ✅ Alamat Pengiriman
     Route::prefix('address')->name('address.')->group(function () {
         Route::get('/', [App\Http\Controllers\UserAddressController::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\UserAddressController::class, 'create'])->name('create');
@@ -59,7 +64,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('{address}', [App\Http\Controllers\UserAddressController::class, 'destroy'])->name('destroy');
     });
 
-    // API Address
+    // ✅ API Lokasi (Wilayah)
     Route::prefix('api')->name('api.')->group(function () {
         Route::get('regencies/{province_id}', function ($province_id) {
             return Regency::where('province_id', $province_id)->get();
@@ -73,4 +78,5 @@ Route::middleware(['auth'])->group(function () {
             return Village::where('district_id', $district_id)->get();
         });
     });
+
 });

@@ -68,6 +68,7 @@ class OrderController extends Controller
                     'product_id' => $cartItem->product_id,
                     'quantity' => $cartItem->quantity,
                     'price_per_item' => $cartItem->product->price,
+                    'total_price' => ($cartItem->quantity) * ($cartItem->product->price),
                 ]);
 
                 // Kurangi stok produk sesuai jumlah yang dibeli
@@ -81,7 +82,7 @@ class OrderController extends Controller
             DB::commit();
 
             // Redirect ke halaman sukses dengan pesan berhasil
-            return redirect()->route('order.success', ['order' => $order->id])->with('success', 'Pesanan berhasil dibuat!');
+            return redirect()->route('orders.success', ['order' => $order->id])->with('success', 'Pesanan berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollback(); // Batalkan transaksi
 
@@ -98,5 +99,94 @@ class OrderController extends Controller
     public function success(Order $order)
     {
         return view('transactions.success', compact('order'));
+    }
+
+    /**
+     * Ambil semua pesanan berdasarkan user dengan filter status.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function getOrders(Request $request)
+    {
+        $user = Auth::user();
+
+        // Ambil filter dari request
+        $orderStatus = $request->query('status');
+        $paymentStatus = $request->query('payment_status');
+
+        // Query pesanan user dengan opsi filter
+        $orders = Order::where('user_id', $user->id)
+            ->when($orderStatus, fn($query) => $query->where('status', $orderStatus))
+            ->when($paymentStatus, fn($query) => $query->where('payment_status', $paymentStatus))
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('orders.index', compact('orders'));
+    }
+
+    /**
+     * Ambil detail pesanan berdasarkan ID.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function getOrderDetail($id)
+    {
+        $user = Auth::user();
+
+        // Ambil pesanan berdasarkan ID dan user
+        $order = Order::where('id', $id)
+            ->where('user_id', $user->id)
+            ->with('orderItems.product')
+            ->first();
+
+        if (!$order) {
+            return redirect()->route('orders.index')->withErrors('Pesanan tidak ditemukan.');
+        }
+
+        return view('orders.detail', compact('order'));
+    }
+
+    /**
+     * Batalkan pesanan hanya jika status pembayaran masih 'unpaid'.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function cancelOrder($id)
+    {
+        $user = Auth::user();
+
+        // Ambil pesanan user yang belum dibayar
+        $order = Order::where('id', $id)
+            ->where('user_id', $user->id)
+            ->where('payment_status', 'unpaid')
+            ->first();
+
+        if (!$order) {
+            return back()->withErrors('Pesanan tidak bisa dibatalkan atau tidak ditemukan.');
+        }
+
+        // Gunakan transaksi untuk menjaga data tetap konsisten
+        DB::beginTransaction();
+        try {
+            // Kembalikan stok produk
+            foreach ($order->orderItems as $item) {
+                $item->product->increment('stock', $item->quantity);
+            }
+
+            // Ubah status pesanan menjadi 'canceled'
+            $order->update([
+                'status' => 'canceled',
+                'payment_status' => 'unpaid', // Status pembayaran tetap 'unpaid'
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Pesanan berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors('Gagal membatalkan pesanan: ' . $e->getMessage());
+        }
     }
 }

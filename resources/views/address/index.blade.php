@@ -11,32 +11,34 @@
             <!-- Profile Section -->
             <div class="col-md-9 mb-3">
                 <h5 class="mb-2">Alamat Pengguna</h5>
+                
                 <!-- Flash Message -->
                 @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
                 @endif
+
                 <!-- Address List Section -->
                 <div class="mb-2">
-                    <table class="table">
-                        <thead>
+                    <table class="table table-bordered">
+                        <thead class="table-light">
                             <tr>
                                 <th>Alamat Lengkap</th>
-                                <th>Opsi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if (auth()->user()->addresses->isEmpty())
-                                <p class="text-muted">Kamu belum memiliki alamat. Silakan tambahkan alamat terlebih dahulu.
-                                </p>
-                                <a href="{{ route('address.create') }}" class="btn btn-outline-primary">Tambah Alamat</a>
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">
+                                        Kamu belum memiliki alamat. Silakan tambahkan alamat terlebih dahulu.
+                                    </td>
+                                </tr>
                             @else
                                 @foreach (auth()->user()->addresses as $address)
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="radio" name="address_id"
-                                            id="address{{ $address->id }}" value="{{ $address->id }}">
-                                        <label class="form-check-label" for="address{{ $address->id }}">
+                                    <tr>
+                                        <td>
                                             {{ ucwords(
                                                 strtolower(
                                                     sprintf(
@@ -50,8 +52,21 @@
                                                     ),
                                                 ),
                                             ) }}
-                                        </label>
-                                    </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a href="{{ route('address.edit', $address->id) }}" class="btn btn-sm btn-warning me-2">Edit</a>
+                                                <form action="{{ route('address.destroy', $address->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Apakah kamu yakin ingin menghapus alamat ini?')">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>                                        
+                                    </tr>
                                 @endforeach
                             @endif
                         </tbody>

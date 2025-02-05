@@ -16,8 +16,8 @@ class Order extends Model
         'total_shipping',
         'total_fee',
         'amount',
-        'status',
-        'payment_status',
+        'status', // 'pending', 'paid', 'shipped', 'completed', 'canceled'
+        'payment_status', // 'unpaid', 'paid', 'refunded'
         'shipping_address',
         'tracking_number',
     ];

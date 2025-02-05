@@ -171,12 +171,15 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                    <a class="dropdown-item" href="{{ route('orders.index') }}">Pesanan Saya</a>
+                                    <a class="dropdown-item" href="{{ route('profile.show') }}">Profil</a>
+                                    <a class="dropdown-item" href="{{ route('address.index') }}">Alamat</a>
+                                    <a class="dropdown-item" href="{{ route('profile.password.change') }}">Kata Sandi</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        Keluar
                                     </a>
-
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
