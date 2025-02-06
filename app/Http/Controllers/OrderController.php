@@ -135,7 +135,7 @@ class OrderController extends Controller
             DB::commit();
 
             // Redirect ke halaman sukses dengan pesan berhasil
-            return redirect()->route('orders.success', ['order' => $order->order_code])->with('success', 'Pesanan berhasil dibuat!');
+            return redirect()->route('orders.success', ['order' => $order->id])->with('success', 'Pesanan berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollback(); // Batalkan transaksi
 

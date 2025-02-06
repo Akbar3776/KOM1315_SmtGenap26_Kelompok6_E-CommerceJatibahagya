@@ -21,6 +21,24 @@
                     </div>
 
                     <div class="card-body">
+
+                        @if ($order->status == 'pending' && $order->payment_status == 'unpaid')
+                            <div class="alert alert-info" role="alert">
+                                <h6 class="alert-heading">Menunggu Pembayaran</h6>
+                                <p>Silakan lakukan pembayaran transfer ke rekening berikut:</p>
+                                <ul class="list-unstyled">
+                                    <li><strong>Bank:</strong> Bank Central Asia</li>
+                                    <li><strong>Nomor Rekening:</strong> 67199219228</li>
+                                    <li><strong>Atas Nama:</strong> PT WaveMoon Indonesia Abadi</li>
+                                    <li><strong>Jumlah:</strong> Rp {{ number_format($order->amount, 0, ',', '.') }}</li>
+                                </ul>
+                                <p>Setelah melakukan pembayaran, mohon konfirmasi pembayaran Anda agar pesanan dapat segera
+                                    diproses.</p>
+                                <a href="" class="btn btn-primary">Konfirmasi
+                                    Pembayaran</a>
+                            </div>
+                        @endif
+
                         <!-- Status Pesanan -->
                         <h5 class="mt-4"><i class="fas fa-receipt"></i> Status Pesanan</h5>
                         <div class="mb-2 bg-light rounded">
