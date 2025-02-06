@@ -97,6 +97,8 @@
             }
         }
     </style>
+
+    @yield('styles')
 </head>
 
 <body>
@@ -108,7 +110,7 @@
                 <div>
                     <a href="{{ route('landing') }}" class="text-muted me-3">Beranda</a>
                     <a href="{{ route('products.all') }}" class="text-muted me-3">Produk</a>
-                    <a href="#" class="text-muted">Bantuan</a>
+                    <a href="{{ route('contact') }}" class="text-muted">Kontak</a>
                 </div>
                 <div>
                     <a href="#" class="text-muted me-3"><i class="bi bi-facebook"></i></a>

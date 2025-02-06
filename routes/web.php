@@ -10,6 +10,9 @@ Auth::routes();
 
 // ✅ Landing Page (Terbuka untuk semua)
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
+Route::get('/contact', [App\Http\Controllers\LandingController::class, 'contact'])->name('contact');
+Route::get('/chat', [App\Http\Controllers\LandingController::class, 'chat'])->name('chat'); 
+
 
 // ✅ Produk
 Route::prefix('products')->name('products.')->group(function () {

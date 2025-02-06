@@ -10,4 +10,14 @@ class LandingController extends Controller
     {
         return view('landing.index');
     }
+
+    public function contact()
+    {
+        return view('pages.contact');
+    }
+
+    public function chat()
+    {
+        return view('pages.chat');
+    }
 }
