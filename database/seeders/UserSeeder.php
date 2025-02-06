@@ -95,6 +95,12 @@ class UserSeeder extends Seeder
             $postalCode
         );
 
+        $fullAddress = sprintf(
+            "Jl %s, No %d",
+            $flowerName,
+            rand(1, 999)
+        );
+
         UserAddress::create([
             'user_id' => $user->id,
             'id_province' => $province->id,

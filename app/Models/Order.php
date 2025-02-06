@@ -12,14 +12,16 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'user_address_id',
+        'order_code',
         'total_order',
         'total_shipping',
         'total_fee',
         'amount',
-        'status', // 'pending', 'paid', 'shipped', 'completed', 'canceled'
+        'status', // 'pending', 'process', 'shipped', 'completed', 'canceled'
         'payment_status', // 'unpaid', 'paid', 'refunded'
         'shipping_address',
         'tracking_number',
+        'notes'
     ];
 
     /**
@@ -44,6 +46,14 @@ class Order extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Relasi ke OrderItems (detail barang yang dibeli dalam pesanan ini).
+     */
+    public function shippings()
+    {
+        return $this->hasOne(Shipping::class);
     }
 
     /**

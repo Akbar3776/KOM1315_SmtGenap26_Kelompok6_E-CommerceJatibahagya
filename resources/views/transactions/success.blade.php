@@ -14,7 +14,7 @@
                 <h3 class="fw-bold text-success">Pesanan Berhasil!</h3>
                 <p class="text-muted">Terima kasih telah berbelanja. Pesanan Anda sedang diproses.</p>
 
-                <a href="{{ route('home') }}" class="btn btn-primary w-100 mt-3">Kembali ke Daftar Pesanan</a>
+                <a href="{{ route('orders.index') }}" class="btn btn-primary w-100 mt-3">Kembali ke Daftar Pesanan</a>
             </div>
         </div>
     </div>

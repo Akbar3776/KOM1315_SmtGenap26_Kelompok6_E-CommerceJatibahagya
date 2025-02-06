@@ -6,9 +6,11 @@ use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Shipping;
 use App\Models\UserAddress;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 /**
  * Controller untuk menangani proses pemesanan.
@@ -26,7 +28,15 @@ class OrderController extends Controller
         // Validasi data input
         $request->validate([
             'address_id' => 'required|exists:user_addresses,id',
-            'payment_method' => 'required|in:COD,Transfer Bank',
+            'shipping_method' => 'required|in:jne,jnt,go-send,grab-express,lalamove,private',
+            'payment_method' => 'required|in:cod,transfer',
+        ], [
+            'address_id.required' => 'Silakan pilih alamat pengiriman.',
+            'address_id.exists' => 'Alamat yang dipilih tidak valid.',
+            'shipping_method.required' => 'Silakan pilih metode pengiriman.',
+            'shipping_method.in' => 'Metode pengiriman tidak valid.',
+            'payment_method.required' => 'Silakan pilih metode pembayaran.',
+            'payment_method.in' => 'Metode pembayaran tidak valid.',
         ]);
 
         // Ambil user yang sedang login
@@ -40,25 +50,41 @@ class OrderController extends Controller
 
         // Hitung total harga pesanan
         $total_order = $cartItems->sum(fn($item) => $item->quantity * $item->product->price);
-        $total_shipping = 75000;
+
+        // Menentukan biaya pengiriman berdasarkan metode yang dipilih
+        $shipping_method = $request->shipping_method;
+        $total_shipping = match ($shipping_method) {
+            'jne' => 40000,
+            'jnt' => 42000,
+            'go-send' => 50000,
+            'grab-express' => 55000,
+            'lalamove' => 60000,
+            'private' => 75000,
+            default => 75000, // Default jika metode tidak dikenali
+        };
+
+        // Biaya tambahan lain
         $total_fee = 2000;
         $amount = $total_order + $total_shipping + $total_fee;
 
         // Simpan pesanan menggunakan transaksi database untuk menghindari error data tidak konsisten
         DB::beginTransaction();
         try {
+            // Tentukan status pesanan berdasarkan metode pembayaran
+            $status = $request->payment_method == 'cod' ? 'process' : 'pending';
+
             // Buat order baru
             $order = Order::create([
                 'user_id' => $user->id,
                 'user_address_id' => $address->id,
+                'order_code' => 'ORD-'.strtoupper(Str::random(10)),
                 'total_order' => $total_order,
                 'total_shipping' => $total_shipping,
                 'total_fee' => $total_fee,
                 'amount' => $amount,
-                'status' => 'pending', // Status default 'pending' saat order dibuat
-                'payment_status' => 'unpaid', // Status pembayaran awal 'unpaid'
+                'status' => $status, // Menggunakan status yang telah ditentukan
+                'payment_status' => $request->payment_method == 'cod' ? 'unpaid' : 'unpaid', // COD tetap unpaid karena pembayaran dilakukan saat pengiriman
                 'shipping_address' => $address->full_address,
-                'tracking_number' => null, // Tracking number belum tersedia saat checkout
             ]);
 
             // Simpan detail pesanan ke tabel OrderItem
@@ -75,6 +101,33 @@ class OrderController extends Controller
                 $cartItem->product->decrement('stock', $cartItem->quantity);
             }
 
+            // Jika metode pembayaran adalah COD, buat Shipping secara otomatis
+            if ($request->payment_method == 'cod') {
+                $shipping_method = $request->shipping_method;
+
+                // Menentukan estimasi pengiriman berdasarkan metode
+                $estimatedDeliveryDays = match ($shipping_method) {
+                    'jne', 'jnt' => 3,
+                    'go-send', 'grab-express', 'lalamove' => 1,
+                    'private' => 2,
+                    default => 3,
+                };
+                $estimatedDeliveryDate = now()->addDays($estimatedDeliveryDays);
+
+                // Menentukan prefix tracking number
+                $trackingPrefix = $shipping_method == 'private' ? 'SHIP' : strtoupper($shipping_method);
+                $trackingNumber = $trackingPrefix . '-' . strtoupper(Str::random(16)); // Generate tracking number
+
+                Shipping::create([
+                    'order_id' => $order->id,
+                    'courier_name' => $shipping_method,
+                    'tracking_number' => $trackingNumber,
+                    'status' => 'in_transit',
+                    'estimated_delivery_date' => $estimatedDeliveryDate,
+                    'delivered_at' => null,
+                ]);
+            }
+
             // Hapus semua item dalam keranjang setelah checkout berhasil
             Cart::where('user_id', $user->id)->delete();
 
@@ -82,7 +135,7 @@ class OrderController extends Controller
             DB::commit();
 
             // Redirect ke halaman sukses dengan pesan berhasil
-            return redirect()->route('orders.success', ['order' => $order->id])->with('success', 'Pesanan berhasil dibuat!');
+            return redirect()->route('orders.success', ['order' => $order->order_code])->with('success', 'Pesanan berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollback(); // Batalkan transaksi
 
@@ -136,9 +189,10 @@ class OrderController extends Controller
         $user = Auth::user();
 
         // Ambil pesanan berdasarkan ID dan user
-        $order = Order::where('id', $id)
+        $order = Order::where('order_code', $id)
             ->where('user_id', $user->id)
             ->with('orderItems.product')
+            ->with('userAddress')
             ->first();
 
         if (!$order) {

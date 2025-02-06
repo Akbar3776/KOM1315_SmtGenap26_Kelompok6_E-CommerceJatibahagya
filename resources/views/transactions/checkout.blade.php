@@ -60,6 +60,39 @@
                         </div>
                     </div>
 
+                    {{-- Metode Pengiriman --}}
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <h5 class="mb-3">Metode Pengiriman</h5>
+
+                            @php
+                                $shippingMethods = [
+                                    ['method' => 'jne', 'label' => 'JNE', 'cost' => 40000],
+                                    ['method' => 'jnt', 'label' => 'JNT', 'cost' => 42000],
+                                    ['method' => 'go-send', 'label' => 'Go-Send', 'cost' => 50000],
+                                    ['method' => 'grab-express', 'label' => 'Grab Express', 'cost' => 55000],
+                                    ['method' => 'lalamove', 'label' => 'Lalamove', 'cost' => 60000],
+                                    ['method' => 'private', 'label' => 'Kurir WaveMoon', 'cost' => 75000],
+                                ];
+                            @endphp
+
+                            <div class="row">
+                                @foreach ($shippingMethods as $data)
+                                    <div class="col-md-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input shipping-method" type="radio"
+                                                name="shipping_method" id="{{ $data['method'] }}"
+                                                value="{{ $data['method'] }}" data-cost="{{ $data['cost'] }}">
+                                            <label class="form-check-label" for="{{ $data['method'] }}">
+                                                {{ $data['label'] }} (Rp {{ number_format($data['cost'], 0, ',', '.') }})
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Metode Pembayaran --}}
                     <div class="card shadow-sm border-0 mb-4">
                         <div class="card-body">
@@ -67,16 +100,15 @@
 
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="radio" name="payment_method" id="cod"
-                                    value="COD" checked>
+                                    value="cod" checked>
                                 <label class="form-check-label" for="cod">Bayar di Tempat (COD)</label>
                             </div>
 
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="radio" name="payment_method" id="transfer"
-                                    value="Transfer Bank">
+                                    value="transfer">
                                 <label class="form-check-label" for="transfer">Transfer Bank Virtual Account (VA)</label>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -96,7 +128,7 @@
                                 @endforeach
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>Ongkos Kirim</span>
-                                    <span>Rp 75.000</span>
+                                    <span id="shipping-cost">Rp {{ number_format($shippingMethods[0]['cost'], 0, ',', '.') }}</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>Biaya Layanan</span>
@@ -105,8 +137,8 @@
                             </ul>
 
                             <h4 class="fw-bold text-end">
-                                Total: <span class="text-danger">Rp
-                                    {{ number_format($cartItems->sum(fn($item) => $item->quantity * $item->product->price), 0, ',', '.') }}</span>
+                                Total: <span class="text-danger" id="total-price">Rp
+                                    {{ number_format($cartItems->sum(fn($item) => $item->quantity * $item->product->price) + $shippingMethods[0]['cost'] + 2000, 0, ',', '.') }}</span>
                             </h4>
                         </div>
                     </div>
@@ -120,4 +152,33 @@
 
         </form>
     </div>
+@endsection
+
+@section('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function untuk update total harga ketika metode pengiriman berubah
+            function updateTotal() {
+                let shippingCost = parseInt($("input[name='shipping_method']:checked").data("cost")) || 0; // Pastikan ada nilai default 0
+                let subtotal = {{ $cartItems->sum(fn($item) => $item->quantity * $item->product->price) }};
+                let serviceFee = 2000;
+                let total = subtotal + shippingCost + serviceFee;
+    
+                // Update ongkos kirim
+                $("#shipping-cost").text("Rp " + shippingCost.toLocaleString("id-ID"));
+                // Update total harga
+                $("#total-price").text("Rp " + total.toLocaleString("id-ID"));
+            }
+    
+            // Event listener untuk perubahan metode pengiriman
+            $(".shipping-method").change(function() {
+                updateTotal();
+            });
+    
+            // Panggil fungsi pertama kali saat halaman dimuat
+            updateTotal();
+        });
+    </script>
+    
 @endsection

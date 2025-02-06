@@ -46,7 +46,7 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th class="d-none">#</th>
                                         <th>Tanggal</th>
                                         <th>Total</th>
                                         <th>Status</th>
@@ -57,13 +57,29 @@
                                 <tbody>
                                     @foreach ($orders as $order)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td class="d-none">{{ $loop->iteration }}</td>
                                             <td>{{ $order->created_at->format('d M Y, H:i') }}</td>
                                             <td>Rp {{ number_format($order->amount, 0, ',', '.') }}</td>
                                             <td>
                                                 <span
-                                                    class="badge bg-{{ $order->status == 'completed' ? 'success' : ($order->status == 'canceled' ? 'danger' : 'warning') }}">
-                                                    {{ $order->status == 'completed' ? 'Selesai' : ($order->status == 'canceled' ? 'Dibatalkan' : 'Dalam Proses') }}
+                                                    class="badge bg-{{ $order->status == 'completed'
+                                                        ? 'success'
+                                                        : ($order->status == 'canceled'
+                                                            ? 'danger'
+                                                            : ($order->status == 'shipped'
+                                                                ? 'primary'
+                                                                : ($order->status == 'process'
+                                                                    ? 'warning'
+                                                                    : 'secondary'))) }}">
+                                                    {{ $order->status == 'completed'
+                                                        ? 'Selesai'
+                                                        : ($order->status == 'canceled'
+                                                            ? 'Dibatalkan'
+                                                            : ($order->status == 'shipped'
+                                                                ? 'Dikirim'
+                                                                : ($order->status == 'process'
+                                                                    ? 'Dalam Proses'
+                                                                    : 'Menunggu Pembayaran'))) }}
                                                 </span>
                                             </td>
                                             <td>
@@ -73,7 +89,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="{{ route('orders.detail', $order->id) }}"
+                                                <a href="{{ route('orders.detail', $order->order_code) }}"
                                                     class="btn btn-sm btn-info">Detail</a>
                                                 @if ($order->status == 'pending')
                                                     <form action="{{ route('orders.cancel', $order->id) }}" method="POST"

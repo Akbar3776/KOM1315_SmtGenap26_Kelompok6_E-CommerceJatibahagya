@@ -14,19 +14,27 @@ class ProductSeeder extends Seeder
     public function run()
     {
         // Seed Brands
-        $brands = Brand::insert([
+        $brands = [
             ['name' => 'IKEA Swedish'],
             ['name' => 'Goto Hardware'],
             ['name' => 'Tjandra Karya'],
             ['name' => 'Azko'],
-        ]);
+        ];
+
+        foreach ($brands as $brandData) {
+            Brand::create($brandData);
+        }
 
         // Seed Categories
-        $categories = Category::insert([
+        $categories = [
             ['name' => 'Kursi & Bangku', 'slug' => 'kursi-bangku'],
             ['name' => 'Lemari', 'slug' => 'lemari'],
-        ]);
+        ];
 
+        foreach ($categories as $categoryData) {
+            Category::create($categoryData);
+        }
+        
         // Data Produk
         $products = [
             // Kategori Kursi & Bangku

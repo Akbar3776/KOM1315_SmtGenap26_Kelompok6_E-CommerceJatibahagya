@@ -14,7 +14,7 @@
 
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <strong>Nomor Pesanan: #{{ $order->id }}</strong>
+                        <strong>Nomor Pesanan: #{{ $order->order_code }}</strong>
                         <a href="{{ route('orders.index') }}" class="btn btn-sm btn-secondary">
                             <i class="fas fa-arrow-left"></i> Kembali
                         </a>
@@ -36,9 +36,25 @@
                                                 <th class="text-start">Status Pesanan</th>
                                                 <td>
                                                     <span
-                                                        class="badge bg-{{ $order->status == 'completed' ? 'success' : ($order->status == 'canceled' ? 'danger' : 'warning') }}">
+                                                        class="badge bg-{{ $order->status == 'completed'
+                                                            ? 'success'
+                                                            : ($order->status == 'canceled'
+                                                                ? 'danger'
+                                                                : ($order->status == 'shipped'
+                                                                    ? 'primary'
+                                                                    : ($order->status == 'process'
+                                                                        ? 'warning'
+                                                                        : 'secondary'))) }}">
                                                         <i class="fas fa-circle"></i>
-                                                        {{ $order->status == 'completed' ? 'Selesai' : ($order->status == 'canceled' ? 'Dibatalkan' : 'Dalam Proses') }}
+                                                        {{ $order->status == 'completed'
+                                                            ? 'Selesai'
+                                                            : ($order->status == 'canceled'
+                                                                ? 'Dibatalkan'
+                                                                : ($order->status == 'shipped'
+                                                                    ? 'Dikirim'
+                                                                    : ($order->status == 'process'
+                                                                        ? 'Dalam Proses'
+                                                                        : 'Menunggu Pembayaran'))) }}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -85,13 +101,13 @@
                             <div class="progress" style="height: 8px;">
                                 <div class="progress-bar 
                                 @if ($order->status == 'pending') bg-warning 
-                                @elseif($order->status == 'processed') bg-primary
+                                @elseif($order->status == 'process') bg-primary
                                 @elseif($order->status == 'shipped') bg-info
                                 @else bg-success @endif"
                                     role="progressbar"
                                     style="width: 
                                 @if ($order->status == 'pending') 25%
-                                @elseif($order->status == 'processed') 50%
+                                @elseif($order->status == 'process') 50%
                                 @elseif($order->status == 'shipped') 75%
                                 @else 100% @endif">
                                 </div>
@@ -144,21 +160,35 @@
                                     </tr>
                                     <tr>
                                         <th class="text-start">Alamat</th>
-                                        <td>{{ $order->shipping_address }}</td>
+                                        <td>
+                                            {{ ucwords(
+                                                strtolower(
+                                                    sprintf(
+                                                        '%s, %s, %s, %s, %s, %d',
+                                                        ucwords($order->userAddress->full_address),
+                                                        $order->userAddress->village->name,
+                                                        $order->userAddress->district->name,
+                                                        $order->userAddress->regency->name,
+                                                        $order->userAddress->province->name,
+                                                        $order->userAddress->postal_code,
+                                                    ),
+                                                ),
+                                            ) }}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="text-start">Kurir</th>
-                                        <td>{{ $order->shipping_courier }}</td>
+                                        <td>{{ strtoupper($order->shippings->courier_name ?? '-') }}</td>
                                     </tr>
                                     <tr>
                                         <th class="text-start">No. Resi</th>
                                         <td>
-                                            @if ($order->tracking_number)
-                                                <span class="badge bg-info">{{ $order->tracking_number }}</span>
-                                                <a href="https://cekresi.com/?noresi={{ $order->tracking_number }}"
-                                                    target="_blank" class="btn btn-sm btn-outline-primary">
+                                            @if ($order->shippings && $order->shippings->tracking_number)
+                                                <span class="badge bg-info">{{ $order->shippings->tracking_number }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    data-bs-toggle="modal" data-bs-target="#shippingDetailsModal">
                                                     <i class="fas fa-search"></i> Lacak Resi
-                                                </a>
+                                                </button>
                                             @else
                                                 <span class="text-muted">Belum tersedia</span>
                                             @endif
@@ -166,6 +196,68 @@
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+
+                        {{-- Modal RESI --}}
+                        <div class="modal fade" id="shippingDetailsModal" tabindex="-1"
+                            aria-labelledby="shippingDetailsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="shippingDetailsModalLabel">Detail Pengiriman</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @if ($order->shippings)
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row">No. Resi:</th>
+                                                        <td>{{ $order->shippings->tracking_number }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Status:</th>
+                                                        <td>
+                                                            @php
+                                                                $status = strtolower($order->shippings->status); // Convert to lowercase for consistent display
+                                                                $formattedStatus = ucwords(
+                                                                    str_replace('_', ' ', $status),
+                                                                ); // Format status (e.g., in_transit -> In Transit)
+                                                            @endphp
+                                                            {{ $formattedStatus }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Kurir:</th>
+                                                        <td>{{ strtoupper($order->shippings->courier_name) }}</td>
+                                                    </tr>
+                                                    @if ($order->shippings->estimated_delivery_date)
+                                                        <tr>
+                                                            <th scope="row">Estimasi Tanggal Kirim:</th>
+                                                            <td>{{ \Carbon\Carbon::parse($order->shippings->estimated_delivery_date)->format('Y-m-d') }}
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                    @if ($order->shippings->delivered_at)
+                                                        <tr>
+                                                            <th scope="row">Tanggal Sampai:</th>
+                                                            <td>{{ \Carbon\Carbon::parse($order->shippings->delivered_at)->format('Y-m-d') }}
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        @else
+                                            <p>Data pengiriman tidak tersedia.</p>
+                                        @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Tombol Aksi -->

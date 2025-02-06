@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders');
             $table->string('courier_name');
             $table->string('tracking_number');
-            $table->enum('status', ['in transit', 'delivered', 'failed'])->default('in transit');
+            $table->enum('status', ['in_transit', 'delivered', 'failed'])->default('in_transit');
             $table->date('estimated_delivery_date');
             $table->timestamp('delivered_at')->nullable();
             $table->timestamps();
