@@ -1,6 +1,48 @@
 @extends('layouts.app')
 
 @section('content')
+    {{-- SECTION Lounge Nav --}}
+    <section class="container d-none d-md-block">
+        <div class="row">
+            <div class="col-md-2 text-center px-3 py-3">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-heart fs-4 text-primary"></i><br>
+                    <span class="d-none">Favorit</span>
+                </a>
+            </div>
+            <div class="col-md-2 text-center px-3 py-3">
+                <a href="{{ route('cart.index') }}" class="nav-link">
+                    <i class="bi bi-cart fs-4 text-primary"></i><br>
+                    <span class="d-none">Keranjang</span>
+                </a>
+            </div>
+            <div class="col-md-2 text-center px-3 py-3">
+                <a href="{{ route('chat') }}" class="nav-link">
+                    <i class="bi bi-chat-dots fs-4 text-primary"></i><br>
+                    <span class="d-none">Pesan</span>
+                </a>
+            </div>
+            <div class="col-md-2 text-center px-3 py-3">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-bell fs-4 text-primary"></i><br>
+                    <span class="d-none">Notifikasi</span>
+                </a>
+            </div>
+            <div class="col-md-2 text-center px-3 py-3">
+                <a href="{{ route('orders.index') }}" class="nav-link">
+                    <i class="bi bi-truck fs-4 text-primary"></i><br>
+                    <span class="d-none">Pengiriman</span>
+                </a>
+            </div>
+            <div class="col-md-2 text-center px-3 py-3">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-box-arrow-up fs-4 text-primary"></i><br>
+                    <span class="d-none">Bagikan</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
     {{-- SECTION: Carousell --}}
     <section class="mb-2">
         @include('landing.carousel')

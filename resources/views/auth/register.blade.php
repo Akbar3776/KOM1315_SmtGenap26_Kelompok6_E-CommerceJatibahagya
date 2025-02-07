@@ -63,23 +63,6 @@
                             </div>
 
                             <div class="row mb-3">
-                                <label for="address"
-                                    class="col-md-4 col-form-label text-md-end">{{ __('Alamat') }}</label>
-
-                                <div class="col-md-6">
-                                    <input id="address" type="text"
-                                        class="form-control @error('address') is-invalid @enderror" name="address"
-                                        value="{{ old('address') }}" autocomplete="address">
-
-                                    @error('address')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
                                 <label for="password"
                                     class="col-md-4 col-form-label text-md-end">{{ __('Kata Sandi') }}</label>
 
@@ -114,6 +97,19 @@
                                 </div>
                             </div>
                         </form>
+
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col-md-6 offset-md-3"> <a href="#" class="btn btn-danger w-100 mb-2"> <i
+                                            class="bi bi-google me-2"></i> Daftar dengan Google
+                                    </a>
+                                    <a href="#" class="btn btn-primary w-100"> <i class="bi bi-facebook me-2"></i>
+                                        Daftar dengan Facebook
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

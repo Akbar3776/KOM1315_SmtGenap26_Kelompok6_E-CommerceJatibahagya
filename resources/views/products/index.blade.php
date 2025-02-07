@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
     <div class="container mt-4">
         <h4 class="mb-2">Produk</h4>
 
@@ -36,10 +37,14 @@
                 <div class="col-md-3 mb-2">
                     <select name="sort_by" class="form-select" onchange="this.form.submit()">
                         <option value="">-- Urutkan --</option>
-                        <option value="name_asc" {{ request('sort_by') == 'name_asc' ? 'selected' : '' }}>Nama Barang (A-Z)</option>
-                        <option value="name_desc" {{ request('sort_by') == 'name_desc' ? 'selected' : '' }}>Nama Barang (Z-A)</option>
-                        <option value="price_asc" {{ request('sort_by') == 'price_asc' ? 'selected' : '' }}>Harga Termurah</option>
-                        <option value="price_desc" {{ request('sort_by') == 'price_desc' ? 'selected' : '' }}>Harga Termahal</option>
+                        <option value="name_asc" {{ request('sort_by') == 'name_asc' ? 'selected' : '' }}>Nama Barang (A-Z)
+                        </option>
+                        <option value="name_desc" {{ request('sort_by') == 'name_desc' ? 'selected' : '' }}>Nama Barang
+                            (Z-A)</option>
+                        <option value="price_asc" {{ request('sort_by') == 'price_asc' ? 'selected' : '' }}>Harga Termurah
+                        </option>
+                        <option value="price_desc" {{ request('sort_by') == 'price_desc' ? 'selected' : '' }}>Harga
+                            Termahal</option>
                     </select>
                 </div>
 
@@ -131,7 +136,8 @@
                                 </small>
                             </p>
                             <div class="mt-auto">
-                                <button type="button" class="btn btn-sm btn-primary w-100">
+                                <button type="button" class="btn btn-sm btn-primary w-100" id="addToCartBtn"
+                                    data-product-id="{{ $product->id }}">
                                     Tambah ke Keranjang
                                 </button>
                             </div>
@@ -151,5 +157,77 @@
         <div class="d-flex justify-content-center mt-4">
             {{ $products->links() }}
         </div>
+
+        {{-- Toast --}}
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white">
+                    <strong class="me-auto text-white">Sukses</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Produk berhasil ditambahkan ke keranjang!
+                </div>
+            </div>
+        </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+
+            // Delegate the click event for dynamically added buttons
+            $(document).on('click', '#addToCartBtn', function() { // <-- Key change
+                var productId = $(this).data('product-id'); // <-- Get product ID from data attribute
+                var quantity = 1; // You can make this dynamic if needed
+
+                $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        product_id: productId,
+                        quantity: quantity
+                    },
+                    success: function(response) {
+                        showToast("Produk berhasil ditambahkan ke keranjang!");
+                        updateCartCount(response.cartCount); // Update cart count (if needed)
+                    },
+                    error: function(xhr) {
+                        showToast("Gagal menambahkan ke keranjang!", true);
+                        console.error("Error:", xhr
+                            .responseText); // Use console.error for errors
+                        if (xhr.status === 422) { // Check for validation errors
+                            var errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, value) {
+                                showToast(value, true); // Display each validation error
+                            });
+                        }
+                    }
+                });
+            });
+
+            function showToast(message, isError = false) {
+                var toast = $("#liveToast"); // Make sure you have a toast element with this ID in your HTML
+                toast.find(".toast-body").text(message);
+
+                if (isError) {
+                    toast.find(".toast-header strong").text("Error");
+                    toast.find(".toast-header").addClass("bg-danger text-white");
+                } else {
+                    toast.find(".toast-header strong").text("Sukses");
+                    toast.find(".toast-header").removeClass("bg-danger text-white");
+                }
+
+                var bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+            }
+
+            function updateCartCount(cartCount) {
+                // Select the cart count element and update its text
+                $('.cart-count').text(cartCount); // Replace.cart-count with your actual class/selector
+            }
+        });
+    </script>
 @endsection

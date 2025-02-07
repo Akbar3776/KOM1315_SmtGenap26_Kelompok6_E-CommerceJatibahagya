@@ -43,7 +43,7 @@
         }
 
         .search-bar {
-            max-width: 400px;
+            /* max-width: 600px; */
             margin: 0 auto;
         }
 
@@ -110,7 +110,8 @@
                 <div>
                     <a href="{{ route('landing') }}" class="text-muted me-3">Beranda</a>
                     <a href="{{ route('products.all') }}" class="text-muted me-3">Produk</a>
-                    <a href="{{ route('contact') }}" class="text-muted">Kontak</a>
+                    <a href="{{ route('contact') }}" class="text-muted me-3">Kontak</a>
+                    <a href="{{ route('chat') }}" class="text-muted">Layanan Pelanggan</a>
                 </div>
                 <div>
                     <a href="#" class="text-muted me-3"><i class="bi bi-facebook"></i></a>
@@ -123,8 +124,9 @@
         {{-- Navbar --}}
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="container d-flex justify-content-center">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" height="30">
+                    <span class="ms-2">{{ config('app.name', 'Laravel') }}</span>
                 </a>
 
                 <!-- Tombol Toggler untuk Mobile -->
@@ -136,13 +138,20 @@
                 <!-- Search Bar dan Tombol Masuk & Daftar -->
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <!-- Search Bar di Tengah -->
-                    <div class="search-bar">
-                        <form class="d-flex">
-                            <input class="form-control me-2" type="search" placeholder="Cari..." aria-label="Search" />
+                    <div class="search-bar d-flex justify-content-between">
+                        <form class="d-flex mx-2" action="{{ route('products.all') }}" method="GET">
+                            <input class="form-control me-2" type="search" name="search" placeholder="Cari..."
+                                aria-label="Search" value="{{ request('search') }}">
                             <button class="btn btn-outline-primary" type="submit">
                                 Cari
                             </button>
                         </form>
+                        <div class="d-flex align-items-center mx-2">
+                            <a href="{{ route('address.index') }}" class="nav-link d-flex align-items-center">
+                                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                                <span class="text-muted">Dikirim ke <span class="fw-bold">Alamat Kamu</span></span>
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Tombol Masuk & Daftar di Kanan -->
@@ -182,7 +191,8 @@
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         Keluar
                                     </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
                                         @csrf
                                     </form>
                                 </div>
@@ -203,13 +213,22 @@
         <div class="container">
             <footer class="py-3 my-4">
                 <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+                    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                        <li class="nav-item">
+                            <a href="{{ route('landing') }}" class="nav-link px-2 text-muted">Beranda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('products.all') }}" class="nav-link px-2 text-muted">Produk</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('contact') }}" class="nav-link px-2 text-muted">Kontak</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('chat') }}" class="nav-link px-2 text-muted">Layanan Pelanggan</a>
+                        </li>
+                    </ul>
                 </ul>
-                <p class="text-center text-muted">© 2021 Company, Inc</p>
+                <p class="text-center text-muted">© 2025 PT WaveMoon Indonesia Abadi</p>
             </footer>
         </div>
     </div>
