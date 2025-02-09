@@ -55,110 +55,9 @@
 
     {{-- SECTION: Flash Sale --}}
     <section class="bg-primary">
-        <div class="container py-5">
-            <h1 class="mb-2 text-white fw-bolder" data-aos="fade-up" data-aos-duration="1000">Flash Sale</h1>
-            <div class="row">
-                <div class="col-12 col-md-3 mb-2" data-aos="fade-left" data-aos-duration="1000">
-                    <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
-                        <div class="card-body">
-                            <h6 class="card-title mb-2" style="text-align: justify">
-                                Meja Belajar Smart Minimalist Deck 22"
-                            </h6>
-                            <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
-                                <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
-                                <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
-                                    4.9 | 250 Ulasan</small>
-                            </p>
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <button type="button" class="btn btn-sm btn-primary">
-                                        Tambah ke Keranjang
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3 mb-2" data-aos="fade-left" data-aos-duration="1000">
-                    <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
-                        <div class="card-body">
-                            <h6 class="card-title mb-2" style="text-align: justify">
-                                Meja Belajar Smart Minimalist Deck 22"
-                            </h6>
-                            <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
-                                <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
-                                <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
-                                    4.9 | 250 Ulasan</small>
-                            </p>
-                            <div class="d-flex justify-content-center align-items-center">
-                                <button type="button" class="btn btn-sm btn-primary">
-                                    Tambah ke Keranjang
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3 mb-2" data-aos="fade-left" data-aos-duration="1000">
-                    <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
-                        <div class="card-body">
-                            <h6 class="card-title mb-2" style="text-align: justify">
-                                Meja Belajar Smart Minimalist Deck 22"
-                            </h6>
-                            <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
-                                <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
-                                <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
-                                    4.9 | 250 Ulasan</small>
-                            </p>
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <button type="button" class="btn btn-sm btn-primary">
-                                        Tambah ke Keranjang
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3 mb-2" data-aos="fade-left" data-aos-duration="1000">
-                    <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
-                        <div class="card-body">
-                            <h6 class="card-title mb-2" style="text-align: justify">
-                                Meja Belajar Smart Minimalist Deck 22"
-                            </h6>
-                            <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
-                                <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
-                                <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
-                                    4.9 | 250 Ulasan</small>
-                            </p>
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <button type="button" class="btn btn-sm btn-primary">
-                                        Tambah ke Keranjang
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @include('landing.flash-sale')
     </section>
+
 
     {{-- SECTION: Poster --}}
     <section class="my-3">
@@ -579,4 +478,94 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('scripts')
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            /* Default 1 slide */
+            spaceBetween: 10,
+            /* Jarak antar slide */
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                /* Auto-slide setiap 3 detik */
+                disableOnInteraction: false
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev"
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 2
+                },
+                1024: {
+                    slidesPerView: 4
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var swiper = new Swiper(".categorySwiper", {
+            slidesPerView: 1,
+            /* Default 1 slide */
+            spaceBetween: 10,
+            /* Jarak antar slide */
+            loop: true,
+            autoplay: {
+                delay: 2500,
+                /* Auto-slide setiap 2.5 detik */
+                disableOnInteraction: false
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev"
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 2
+                },
+                /* Tampilkan 2 item saat di tablet */
+                1024: {
+                    slidesPerView: 3
+                } /* Tampilkan 3 item saat di desktop */
+            }
+        });
+    </script>
+
+    <script>
+        // Set waktu akhir Flash Sale (misalnya, 24 jam dari sekarang)
+        let countdownDate = new Date().getTime() + (24 * 60 * 60 * 1000);
+
+        function updateCountdown() {
+            let now = new Date().getTime();
+            let distance = countdownDate - now;
+
+            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("flash-sale-timer").innerHTML =
+                `<a href="#" class="btn btn-secondary text-danger rounded-4 fw-bold"><i class="bi bi-clock-fill me-2"></i> ${hours}:${minutes}:${seconds}</a>`;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("flash-sale-timer").innerHTML =
+                    `<a href="#" class="btn btn-danger rounded-4"><i class="bi bi-clock-fill me-2"></i> Flash Sale Berakhir</a>`;
+            }
+        }
+
+        let countdownInterval = setInterval(updateCountdown, 1000);
+    </script>
 @endsection
