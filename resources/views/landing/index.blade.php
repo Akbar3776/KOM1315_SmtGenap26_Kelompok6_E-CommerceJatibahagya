@@ -58,7 +58,6 @@
         @include('landing.flash-sale')
     </section>
 
-
     {{-- SECTION: Poster --}}
     <section class="my-3">
         <div class="container">
@@ -86,32 +85,37 @@
 
     {{-- SECTION: Best of The Month --}}
     <section class="my-3" data-aos="fade-up" data-aos-duration="1000">
+        @include('landing.best-product')
+    </section>
+
+    {{-- SECTION: Poster II --}}
+    <section class="my-3" data-aos="fade-up" data-aos-duration="1000">
+        <img class="img-fluid w-100" style="height: 80%;" src="{{ asset('images/promo2.png') }}" alt="Promosi" />
+    </section>
+
+    {{-- SECTION: New Product --}}
+    <section class="my-3" data-aos="fade-up" data-aos-duration="1000">
         <div class="bg-primary py-3">
             <h1 class="text-center text-white fw-bolder my-2">
-                Best Item Of The Month
+                Produk Terbaru
             </h1>
             <p class="text-center text-white mb-2">
                 Temukan beragam produk yang sesuai dengan gaya dan kebutuhan Anda.
             </p>
         </div>
         <div class="container my-3">
-            <div class="text-center my-2">
-                <button class="btn btn-primary me-1">10 Kursi Terbaik</button>
-                <button class="btn btn-primary me-1">10 Meja Makan Terbaik</button>
-                <button class="btn btn-primary me-1">10 Lemari Baju Terbaik</button>
-            </div>
             <div class="row">
                 <div class="col-12 col-md-3 mb-2">
                     <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
+                        <div class="product-image">
+                            <span class="new-tag fw-bold">BARU</span>
+                            <img src="{{ asset('images/category-office.png') }}" class="card-img-top" alt="OFFICE" />
+                        </div>
                         <div class="card-body">
                             <h6 class="card-title mb-2" style="text-align: justify">
                                 Meja Belajar Smart Minimalist Deck 22"
                             </h6>
                             <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
                                 <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
                                 <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
                                     4.9 | 250 Ulasan</small>
@@ -128,38 +132,15 @@
                 </div>
                 <div class="col-12 col-md-3 mb-2">
                     <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
-                        <div class="card-body">
-                            <h6 class="card-title mb-2" style="text-align: justify">
-                                Meja Belajar Smart Minimalist Deck 22"
-                            </h6>
-                            <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
-                                <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
-                                <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
-                                    4.9 | 250 Ulasan</small>
-                            </p>
-                            <div class="d-flex justify-content-center align-items-center">
-                                <button type="button" class="btn btn-sm btn-primary">
-                                    Tambah ke Keranjang
-                                </button>
-                            </div>
+                        <div class="product-image">
+                            <span class="new-tag fw-bold">BARU</span>
+                            <img src="{{ asset('images/category-office.png') }}" class="card-img-top" alt="OFFICE" />
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3 mb-2">
-                    <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
                         <div class="card-body">
                             <h6 class="card-title mb-2" style="text-align: justify">
                                 Meja Belajar Smart Minimalist Deck 22"
                             </h6>
                             <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
                                 <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
                                 <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
                                     4.9 | 250 Ulasan</small>
@@ -176,15 +157,40 @@
                 </div>
                 <div class="col-12 col-md-3 mb-2">
                     <div class="card shadow-sm">
-                        <img src="{{ asset('images/category-office.png') }}" class="bd-placeholder-img card-img-top"
-                            alt="OFFICE" />
+                        <div class="product-image">
+                            <span class="new-tag fw-bold">BARU</span>
+                            <img src="{{ asset('images/category-office.png') }}" class="card-img-top" alt="OFFICE" />
+                        </div>
                         <div class="card-body">
                             <h6 class="card-title mb-2" style="text-align: justify">
                                 Meja Belajar Smart Minimalist Deck 22"
                             </h6>
                             <p class="card-text">
-                                <span class="fw-normal text-danger text-decoration-line-through d-flex mb-0">Rp
-                                    2.500.000</span>
+                                <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
+                                <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
+                                    4.9 | 250 Ulasan</small>
+                            </p>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <button type="button" class="btn btn-sm btn-primary">
+                                        Tambah ke Keranjang
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 mb-2">
+                    <div class="card shadow-sm">
+                        <div class="product-image">
+                            <span class="new-tag fw-bold">BARU</span>
+                            <img src="{{ asset('images/category-office.png') }}" class="card-img-top" alt="OFFICE" />
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title mb-2" style="text-align: justify">
+                                Meja Belajar Smart Minimalist Deck 22"
+                            </h6>
+                            <p class="card-text">
                                 <span class="fw-normal text-black d-flex mb-0">Rp 1.750.000</span>
                                 <small class="fw-light text-muted-flex"><span class="text-warning bi bi-star-fill"></span>
                                     4.9 | 250 Ulasan</small>
@@ -363,6 +369,96 @@
                     </p>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <hr />
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                <img src="{{ asset('images/category-office.png') }}" class="img-fluid rounded-start"
+                                    alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h6 class="card-title">Meja Belajar Smart Minimalist Deck 22"</h6>
+                                    <p class="card-text d-block">
+                                        <span class="fw-normal text-black d-block">Rp 1.750.000</span>
+                                        <small class="fw-light text-muted d-block">
+                                            <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <hr />
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                <img src="{{ asset('images/category-office.png') }}" class="img-fluid rounded-start"
+                                    alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h6 class="card-title">Meja Belajar Smart Minimalist Deck 22"</h6>
+                                    <p class="card-text d-block">
+                                        <span class="fw-normal text-black d-block">Rp 1.750.000</span>
+                                        <small class="fw-light text-muted d-block">
+                                            <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <hr />
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                <img src="{{ asset('images/category-office.png') }}" class="img-fluid rounded-start"
+                                    alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h6 class="card-title">Meja Belajar Smart Minimalist Deck 22"</h6>
+                                    <p class="card-text d-block">
+                                        <span class="fw-normal text-black d-block">Rp 1.750.000</span>
+                                        <small class="fw-light text-muted d-block">
+                                            <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <hr />
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                <img src="{{ asset('images/category-office.png') }}" class="img-fluid rounded-start"
+                                    alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h6 class="card-title">Meja Belajar Smart Minimalist Deck 22"</h6>
+                                    <p class="card-text d-block">
+                                        <span class="fw-normal text-black d-block">Rp 1.750.000</span>
+                                        <small class="fw-light text-muted d-block">
+                                            <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -481,6 +577,7 @@
 @endsection
 
 @section('scripts')
+    {{-- Swiper Flash Sale --}}
     <script>
         var swiper = new Swiper(".mySwiper", {
             slidesPerView: 1,
@@ -506,12 +603,13 @@
                     slidesPerView: 2
                 },
                 1024: {
-                    slidesPerView: 4
+                    slidesPerView: 5
                 }
             }
         });
     </script>
 
+    {{-- Swiper Best Category --}}
     <script>
         var swiper = new Swiper(".categorySwiper", {
             slidesPerView: 1,
@@ -544,6 +642,7 @@
         });
     </script>
 
+    {{-- Countdown Flash Sale --}}
     <script>
         // Set waktu akhir Flash Sale (misalnya, 24 jam dari sekarang)
         let countdownDate = new Date().getTime() + (24 * 60 * 60 * 1000);
@@ -568,4 +667,25 @@
 
         let countdownInterval = setInterval(updateCountdown, 1000);
     </script>
+
+    {{-- Script untuk Toggle Category --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const buttons = document.querySelectorAll(".tab-btn");
+            const productLists = document.querySelectorAll(".product-list");
+    
+            buttons.forEach((button) => {
+                button.addEventListener("click", function () {
+                    const category = this.getAttribute("data-category");
+    
+                    productLists.forEach((list) => {
+                        list.style.display = "none"; // Sembunyikan semua kategori
+                    });
+    
+                    document.getElementById(category).style.display = "flex"; // Tampilkan kategori yang dipilih
+                });
+            });
+        });
+    </script>
+    
 @endsection

@@ -25,7 +25,7 @@
 
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    
+
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
@@ -55,7 +55,7 @@
         }
 
         .carousel-item {
-            height: 400px;
+            height: 500px;
             /* Tinggi carousel */
             background-size: cover;
             background-position: center;
@@ -72,6 +72,63 @@
             font-size: 1.5rem;
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .product-image {
+            position: relative;
+            overflow: hidden;
+            /* Pastikan gambar tidak keluar dari container */
+        }
+
+        .discount-tag {
+            position: absolute;
+            top: 10px;
+            /* Atur posisi vertikal tag */
+            left: 10px;
+            /* Atur posisi horizontal tag */
+            background-color: #f00;
+            /* Warna latar belakang tag */
+            color: #fff;
+            /* Warna teks tag */
+            padding: 5px 10px;
+            /* Padding tag */
+            font-size: 14px;
+            /* Ukuran font tag */
+            border-radius: 5px;
+            /* Bentuk tag (opsional) */
+            z-index: 1;
+            /* Pastikan tag di atas gambar */
+        }
+
+        .new-tag {
+            position: absolute;
+            top: 10px;
+            /* Atur posisi vertikal tag */
+            left: 10px;
+            /* Atur posisi horizontal tag */
+            background-color: rgb(13, 148, 46);
+            /* Warna latar belakang tag */
+            color: #fff;
+            /* Warna teks tag */
+            padding: 5px 10px;
+            /* Padding tag */
+            font-size: 14px;
+            /* Ukuran font tag */
+            border-radius: 5px;
+            /* Bentuk tag (opsional) */
+            z-index: 1;
+            /* Pastikan tag di atas gambar */
+        }
+
+        .product-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Maksimal 2 baris */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 2.8em;
+            /* Pastikan tinggi tetap */
         }
 
         @media (max-width: 768px) {
