@@ -274,27 +274,74 @@
         </main>
 
         {{-- Footer --}}
-        <div class="container">
-            <footer class="py-3 my-4">
-                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-                    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-                        <li class="nav-item">
-                            <a href="{{ route('landing') }}" class="nav-link px-2 text-muted">Beranda</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('products.all') }}" class="nav-link px-2 text-muted">Produk</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('contact') }}" class="nav-link px-2 text-muted">Kontak</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('chat') }}" class="nav-link px-2 text-muted">Layanan Pelanggan</a>
-                        </li>
-                    </ul>
-                </ul>
-                <p class="text-center text-muted">© 2025 PT WaveMoon Indonesia Abadi</p>
-            </footer>
-        </div>
+        <footer class="bg-light py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                        <h5 class="mt-1">JatiBahagya</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-muted text-decoration-none">Tentang JatiBahagya</a></li>
+                            <li><a href="#" class="text-muted text-decoration-none">Hak Kekayaan Intelektual</a>
+                            </li>
+                            <li><a href="#" class="text-muted text-decoration-none">Promo Bulanan</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                        <h5 class="mt-1">Jam Operasional</h5>
+                        <p class="text-muted">Senin - Minggu: 9:00 - 18:00 WIB</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6 text-lg-center">
+                        <h5 class="mt-1">Ikuti Kami</h5>
+                        <ul class="list-inline">
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-facebook"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-twitter"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-instagram"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-youtube"></i></a></li>
+                        </ul>
+                    </div>                    
+                    <div class="col-lg-3 col-md-6">
+                        <h5 class="mt-1">Cek Aplikasi</h5>
+                        <ul class="list-unstyled">
+                            <li><span class="text-success"><i class="bi bi-cash-coin"></i></span> Diskon 70%* hanya di
+                                aplikasi</li>
+                            <li><span class="text-info"><i class="bi bi-gift"></i></span> Promo khusus aplikasi</li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <p class="text-muted">Buka aplikasi dengan scan QR atau klik tombol:</p>
+                        <div class="d-flex">
+                            <img src="{{ asset('images/qr-app.png') }}" alt="QR Code" class="img-fluid me-3"
+                                width="120">
+                            <div>
+                                <a href="#" class="btn btn-sm btn-outline-secondary mb-2">
+                                    <div style="width: 110px;">
+                                        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                                            alt="Google Play" width="100%">
+                                    </div>
+                                </a><br>
+                                <a href="#" class="btn btn-sm btn-outline-secondary mb-2">
+                                    <div style="width: 110px;">
+                                        <img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg"
+                                            alt="App Store" width="100%">
+                                    </div>
+                                </a><br>
+                            </div>
+                        </div>
+                        <a href="#" class="text-muted text-decoration-none mt-4">Pelajari Selengkapnya</a>
+                    </div>
+                    <div class="col-md-6 text-end">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12 text-center">
+                        <p class="text-muted">&copy; 2025 JatiBahagya. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <!-- Jquery -->
