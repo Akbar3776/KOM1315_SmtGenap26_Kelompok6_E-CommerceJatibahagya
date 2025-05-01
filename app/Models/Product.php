@@ -15,8 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $brand_id
  * @property string $image
  * @property string $status
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
  */
 class Product extends Model
 {
@@ -35,9 +33,12 @@ class Product extends Model
 
     public function setImageAttribute($value)
     {
-        $this->attributes['image'] = $value ?? 'images/dummy/dummy-' . rand(1, 5) . '.png';
+        if ($value) {
+            $this->attributes['image'] = $value;
+        } elseif (!$this->exists) {
+            $this->attributes['image'] = 'images/dummy/dummy-' . rand(1, 5) . '.png';
+        }
     }
-
 
     public function category()
     {
@@ -47,5 +48,15 @@ class Product extends Model
     public function brand()
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function attributes()
+    {
+        return $this->hasMany(Attribute::class);
     }
 }
