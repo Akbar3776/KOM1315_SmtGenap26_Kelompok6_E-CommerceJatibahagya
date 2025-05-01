@@ -52,6 +52,11 @@ class ProductResource extends Resource
                             ->numeric()
                             ->required(),
 
+                        Forms\Components\TextInput::make('stock')
+                            ->label('Stock Awal')
+                            ->numeric()
+                            ->required(),
+
                         Forms\Components\Select::make('category_id')
                             ->label('Kategori')
                             ->relationship('category', 'name')
@@ -62,7 +67,7 @@ class ProductResource extends Resource
                             ->relationship('brand', 'name')
                             ->required(),
 
-                        Forms\Components\FileUpload::make('main_image')
+                        Forms\Components\FileUpload::make('image')
                             ->label('Gambar Utama')
                             ->image()
                             ->directory('products'),
@@ -102,33 +107,41 @@ class ProductResource extends Resource
                     ->label('Varian')
                     ->schema([
                         Forms\Components\TextInput::make('sku')
-                            ->label('SKU')
-                            ->required(),
+                            ->label('SKU'),
 
                         Forms\Components\TextInput::make('price')
                             ->label('Harga')
-                            ->numeric()
-                            ->required(),
+                            ->numeric(),
 
                         Forms\Components\TextInput::make('stock')
                             ->label('Stok')
-                            ->numeric()
-                            ->required(),
+                            ->numeric(),
 
                         Forms\Components\Select::make('attribute_combination')
                             ->label('Pilih Kombinasi Varian')
                             ->options(function ($get) {
-                                $productId = $get('id') ?? $get('../../id');
+                                $productId = $get('../../id'); // Gunakan parent product ID
+
+                                // Jika product belum disimpan, return empty
+                                if (!$productId) {
+                                    return [];
+                                }
 
                                 $attributes = Attribute::with('values')
                                     ->where('product_id', $productId)
                                     ->get();
 
-
                                 return static::generateCombinations($attributes);
                             })
                             ->required()
                             ->searchable(false)
+                            ->reactive()
+                            ->disabled(fn($get) => empty($get('../../id'))) // Disable jika product belum disimpan
+                            ->placeholder(function ($get) {
+                                return empty($get('../../id'))
+                                    ? 'Simpan produk terlebih dahulu'
+                                    : 'Pilih kombinasi varian';
+                            })
                             ->afterStateHydrated(function ($component, $state) {
                                 if (is_array($state)) {
                                     $component->state(json_encode(
@@ -138,11 +151,28 @@ class ProductResource extends Resource
                                     ));
                                 }
                             })
-                            ->dehydrateStateUsing(fn($state) => json_decode($state, true))
+                            ->dehydrateStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return [];
+                                }
+                                return json_decode($state, true);
+                            })
                             ->saveRelationshipsUsing(function (ProductVariant $variant, $state) {
-                                $variant->attributeValues()->sync(json_decode($state, true));
+                                $attributeValueIds = json_decode($state, true);
+
+                                // Validasi
+                                if (!is_array($attributeValueIds)) {
+                                    return;
+                                }
+
+                                // Filter hanya nilai integer
+                                $validIds = array_filter($attributeValueIds, 'is_numeric');
+
+                                // Gunakan sync dengan array biasa
+                                $variant->attributeValues()->sync($validIds);
+
                                 $variant->update([
-                                    'sku' => static::generateSku($variant->product, json_decode($state, true))
+                                    'sku' => static::generateSku($variant->product, $validIds)
                                 ]);
                             }),
 
@@ -249,10 +279,22 @@ class ProductResource extends Resource
 
     protected static function generateCombinations($attributes)
     {
+        // Handle case ketika tidak ada atribut
+        if ($attributes->isEmpty()) {
+            return [];
+        }
+
         $groups = $attributes->map(fn($attr) => $attr->values->map(fn($val) => [
             'id' => $val->id,
             'label' => "{$attr->name}: {$val->value}"
         ]));
+
+        // Pastikan semua groups punya nilai
+        $groups = $groups->filter(fn($group) => $group->isNotEmpty());
+
+        if ($groups->isEmpty()) {
+            return [];
+        }
 
         $combinations = collect($groups->shift())
             ->crossJoin(...$groups)
