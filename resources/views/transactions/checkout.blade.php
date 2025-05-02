@@ -67,12 +67,8 @@
 
                             @php
                                 $shippingMethods = [
-                                    ['method' => 'jne', 'label' => 'JNE', 'cost' => 40000],
-                                    ['method' => 'jnt', 'label' => 'JNT', 'cost' => 42000],
-                                    ['method' => 'go-send', 'label' => 'Go-Send', 'cost' => 50000],
-                                    ['method' => 'grab-express', 'label' => 'Grab Express', 'cost' => 55000],
-                                    ['method' => 'lalamove', 'label' => 'Lalamove', 'cost' => 60000],
-                                    ['method' => 'private', 'label' => 'Kurir WaveMoon', 'cost' => 75000],
+                                    ['method' => 'pickup', 'label' => 'Pickup di Toko', 'cost' => 0],
+                                    ['method' => 'private', 'label' => 'Kurir JatiBahagya', 'cost' => 70000],
                                 ];
                             @endphp
 
@@ -121,14 +117,29 @@
                             <ul class="list-group mb-3">
                                 @foreach ($cartItems as $cartItem)
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>{{ $cartItem->product->name }} ({{ $cartItem->quantity }})</span>
+                                        <div>
+                                            <span>{{ $cartItem->product->name }}</span>
+                                            @if ($cartItem->variant)
+                                                <div class="text-muted small">
+                                                    @foreach ($cartItem->variant->attributeValues as $attribute)
+                                                        {{ $attribute->attribute->name }}: {{ $attribute->value }}
+                                                        @if (!$loop->last)
+                                                            ,
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                            <span class="text-muted">({{ $cartItem->quantity }})</span>
+                                        </div>
                                         <span class="text-nowrap">Rp
-                                            {{ number_format($cartItem->quantity * $cartItem->product->price, 0, ',', '.') }}</span>
+                                            {{ number_format($cartItem->quantity * ($cartItem->price ?? $cartItem->product->price), 0, ',', '.') }}
+                                        </span>
                                     </li>
                                 @endforeach
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>Ongkos Kirim</span>
-                                    <span id="shipping-cost">Rp {{ number_format($shippingMethods[0]['cost'], 0, ',', '.') }}</span>
+                                    <span id="shipping-cost">Rp
+                                        {{ number_format($shippingMethods[0]['cost'], 0, ',', '.') }}</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>Biaya Layanan</span>
@@ -160,25 +171,28 @@
         $(document).ready(function() {
             // Function untuk update total harga ketika metode pengiriman berubah
             function updateTotal() {
-                let shippingCost = parseInt($("input[name='shipping_method']:checked").data("cost")) || 0; // Pastikan ada nilai default 0
-                let subtotal = {{ $cartItems->sum(fn($item) => $item->quantity * $item->product->price) }};
+                let shippingCost = parseInt($("input[name='shipping_method']:checked").data("cost")) ||
+                    0; // Pastikan ada nilai default 0
+                let subtotal =
+                    {{ $cartItems->sum(function ($item) {
+                        return $item->quantity * ($item->price ?? $item->product->price);
+                    }) }};
                 let serviceFee = 2000;
                 let total = subtotal + shippingCost + serviceFee;
-    
+
                 // Update ongkos kirim
                 $("#shipping-cost").text("Rp " + shippingCost.toLocaleString("id-ID"));
                 // Update total harga
                 $("#total-price").text("Rp " + total.toLocaleString("id-ID"));
             }
-    
+
             // Event listener untuk perubahan metode pengiriman
             $(".shipping-method").change(function() {
                 updateTotal();
             });
-    
+
             // Panggil fungsi pertama kali saat halaman dimuat
             updateTotal();
         });
     </script>
-    
 @endsection
