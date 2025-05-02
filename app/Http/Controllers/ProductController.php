@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\ProductVariantValue;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -71,9 +72,39 @@ class ProductController extends Controller
      */
     public function getDetail(int $productId): View
     {
-        $product = Product::findOrFail($productId);
+        $product = Product::with(['attributes.values', 'variants.attributeValues'])
+            ->findOrFail($productId);
 
-        return view('products.detail', compact('product'));
+        // Format data untuk JavaScript
+        $variantData = [
+            'attributes' => $product->attributes->map(function ($attr) {
+                return [
+                    'id' => $attr->id,
+                    'name' => $attr->name,
+                    'values' => $attr->values->map(function ($val) {
+                        return [
+                            'id' => $val->id,
+                            'value' => $val->value
+                        ];
+                    })
+                ];
+            }),
+            'variants' => $product->variants->map(function ($variant) {
+                return [
+                    'id' => $variant->id,
+                    'sku' => $variant->sku,
+                    'price' => $variant->price,
+                    'stock' => $variant->stock,
+                    'image' => $variant->image,
+                    'attributes' => $variant->attributeValues->pluck('id')->toArray()
+                ];
+            })
+        ];
+
+        return view('products.detail', [
+            'product' => $product,
+            'variants' => $product->variants,
+            'variantData' => $variantData
+        ]);
     }
-
 }
