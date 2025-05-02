@@ -46,21 +46,19 @@ class OrderController extends Controller
         $address = UserAddress::find($request->address_id);
 
         // Ambil produk dalam keranjang
-        $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
+        $cartItems = Cart::with(['product', 'variant'])->where('user_id', $user->id)->get();
 
         // Hitung total harga pesanan
-        $total_order = $cartItems->sum(fn($item) => $item->quantity * $item->product->price);
+        $total_order = $cartItems->sum(function ($item) {
+            return $item->quantity * ($item->price ?? $item->product->price);
+        });
 
         // Menentukan biaya pengiriman berdasarkan metode yang dipilih
         $shipping_method = $request->shipping_method;
         $total_shipping = match ($shipping_method) {
-            'jne' => 40000,
-            'jnt' => 42000,
-            'go-send' => 50000,
-            'grab-express' => 55000,
-            'lalamove' => 60000,
-            'private' => 75000,
-            default => 75000, // Default jika metode tidak dikenali
+            'private' => 70000,
+            'pickup' => 0,
+            default => 75000,
         };
 
         // Biaya tambahan lain
@@ -77,7 +75,7 @@ class OrderController extends Controller
             $order = Order::create([
                 'user_id' => $user->id,
                 'user_address_id' => $address->id,
-                'order_code' => 'ORD-'.strtoupper(Str::random(10)),
+                'order_code' => 'ORD-' . strtoupper(Str::random(10)),
                 'total_order' => $total_order,
                 'total_shipping' => $total_shipping,
                 'total_fee' => $total_fee,
@@ -89,16 +87,24 @@ class OrderController extends Controller
 
             // Simpan detail pesanan ke tabel OrderItem
             foreach ($cartItems as $cartItem) {
-                OrderItem::create([
+                $orderItemData = [
                     'order_id' => $order->id,
                     'product_id' => $cartItem->product_id,
+                    'variant_id' => $cartItem->variant_id,
                     'quantity' => $cartItem->quantity,
-                    'price_per_item' => $cartItem->product->price,
-                    'total_price' => ($cartItem->quantity) * ($cartItem->product->price),
-                ]);
+                    'price_per_item' => $cartItem->price ?? $cartItem->product->price,
+                    'total_price' => $cartItem->quantity * ($cartItem->price ?? $cartItem->product->price),
+                    'options' => $cartItem->variant ? $cartItem->variant->attributeValues->pluck('pivot.value', 'name') : null,
+                ];
+
+                OrderItem::create($orderItemData);
 
                 // Kurangi stok produk sesuai jumlah yang dibeli
-                $cartItem->product->decrement('stock', $cartItem->quantity);
+                if ($cartItem->variant) {
+                    $cartItem->variant->decrement('stock', $cartItem->quantity);
+                } else {
+                    $cartItem->product->decrement('stock', $cartItem->quantity);
+                }
             }
 
             // Jika metode pembayaran adalah COD, buat Shipping secara otomatis
