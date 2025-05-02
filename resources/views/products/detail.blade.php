@@ -15,7 +15,11 @@
             <div class="col-md-6">
 
                 <div id="PD-Head">
-                    <p class="fw-bold text-danger p-0 my-0">[[Ruang Tamu]]</p>
+                    @if ($product->category)
+                        <p class="fw-bold text-danger p-0 my-0">
+                            {{ $product->category->name }}
+                        </p>
+                    @endif
                     <h3 class="py-0 my-2">{{ $product->name }}</h3>
                     <div class="d-flex align-items-center py-0 my-0">
                         <div class="text-primary">
@@ -32,18 +36,41 @@
 
                 <div id="PD-Price">
                     @php
-                        $hargaAsli = 3500000; // Contoh: 3500000
-                        $diskonPersen = 50; // Misal diskon 15%
+                        $hargaAsli = $product->price;
+                        $diskonPersen = $product->discount_percentage ?? 0;
                         $hargaDiskon = $hargaAsli - ($hargaAsli * $diskonPersen) / 100;
+
+                        $hasVariants = $variants->isNotEmpty();
+                        $variantPrices = $variants->pluck('price');
                     @endphp
 
-                    <h4 class="text-muted text-decoration-line-through mb-1">
-                        Rp {{ number_format($hargaAsli, 0, ',', '.') }}
-                    </h4>
-                    <h4 class="text-primary">
-                        Rp {{ number_format($hargaDiskon, 0, ',', '.') }}
-                        <small class="text-danger fw-bold">-{{ $diskonPersen }}%</small>
-                    </h4>
+                    @if ($hasVariants)
+                        @php
+                            $minPrice = $variantPrices->min();
+                            $maxPrice = $variantPrices->max();
+                        @endphp
+
+                        <h4 class="text-primary">
+                            Rp {{ number_format($minPrice, 0, ',', '.') }}
+                            @if ($minPrice !== $maxPrice)
+                                - Rp {{ number_format($maxPrice, 0, ',', '.') }}
+                            @endif
+                        </h4>
+                    @else
+                        @if ($diskonPersen > 0)
+                            <h4 class="text-muted text-decoration-line-through mb-1">
+                                Rp {{ number_format($hargaAsli, 0, ',', '.') }}
+                            </h4>
+                            <h4 class="text-primary">
+                                Rp {{ number_format($hargaDiskon, 0, ',', '.') }}
+                                <small class="text-danger fw-bold">-{{ $diskonPersen }}%</small>
+                            </h4>
+                        @else
+                            <h4 class="text-primary">
+                                Rp {{ number_format($hargaAsli, 0, ',', '.') }}
+                            </h4>
+                        @endif
+                    @endif
                 </div>
 
                 <div id="PD-Shipping">
@@ -76,24 +103,42 @@
                 </div>
 
                 <div id="PD-Variant" class="row g-2">
-                    <div class="col-md-6">
-                        <label for="variant-ukuran" class="form-label">Pilih Ukuran</label>
-                        <select id="variant-ukuran" class="form-select">
-                            <option selected disabled>-- Pilih Ukuran --</option>
-                            <option value="S">Kecil (S)</option>
-                            <option value="M">Sedang (M)</option>
-                            <option value="L">Besar (L)</option>
-                        </select>
+                    <div class="row mb-3" id="variant-selection">
+                        @foreach ($product->attributes as $attribute)
+                            <div class="col-md-6 mb-2">
+                                <label for="attribute-{{ $attribute->id }}" class="form-label">
+                                    Pilih {{ $attribute->name }}
+                                </label>
+                                <select id="attribute-{{ $attribute->id }}" class="form-select variant-selector"
+                                    data-attribute-id="{{ $attribute->id }}">
+                                    <option selected disabled>-- Pilih {{ $attribute->name }} --</option>
+                                    @foreach ($attribute->values as $value)
+                                        <option value="{{ $value->id }}">
+                                            {{ $value->value }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="col-md-6">
-                        <label for="variant-warna" class="form-label">Pilih Warna</label>
-                        <select id="variant-warna" class="form-select">
-                            <option selected disabled>-- Pilih Warna --</option>
-                            <option value="abu">Abu-abu</option>
-                            <option value="biru">Biru</option>
-                            <option value="coklat">Coklat</option>
-                        </select>
+                    <div id="selected-variant-info" class="d-none">
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Varian Dipilih</h5>
+                                <div class="row">
+                                    <div class="col-md-4 text-center">
+                                        <img id="variant-image" src="" class="img-fluid" style="max-height: 150px;">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p class="mb-1"><strong>SKU:</strong> <span id="variant-sku"></span></p>
+                                        <p class="mb-1"><strong>Harga:</strong> Rp <span id="variant-price"></span></p>
+                                        <p class="mb-1"><strong>Stok:</strong> <span id="variant-stock"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div id="variant-error" class="alert alert-danger mt-3 d-none"></div>
                     <div class="mt-3 d-flex gap-2">
                         <button id="addToCartBtn" class="btn btn-primary w-50 py-2">Tambah ke Keranjang</button>
                         <button id="buyNowBtn" class="btn btn-outline-primary w-50 py-2">Beli Sekarang</button>
@@ -102,12 +147,13 @@
                         <small class="text-muted d-block my-1">100% Guaranteed and Durable Products</small>
                         <div class="d-flex align-items-start my-1">
                             <i class="bi bi-gift text-primary me-2 mt-1"></i>
-                            <small class="fw-bolder">Dapatkan bonus hingga 5.000 poin! Cek kehadiran setiap hari di bulan Mei dan kumpulkan poin sebanyak-banyaknya!</small>
+                            <small class="fw-bolder">Dapatkan bonus hingga 5.000 poin! Cek kehadiran setiap hari di bulan
+                                Mei dan kumpulkan poin sebanyak-banyaknya!</small>
                         </div>
                         <div class="d-flex align-items-start my-1">
                             <i class="bi bi-cash-coin text-primary me-2 mt-1"></i>
                             <small class="fw-bolder">Belanja pertama kali? Nikmati cashback 3% tanpa batas!</small>
-                        </div>                                    
+                        </div>
                     </div>
                 </div>
             </div>
@@ -223,6 +269,120 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const variantData = @json($variantData);
+            const selectElements = document.querySelectorAll('.variant-selector');
+            const selectedAttributes = {};
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const buyNowBtn = document.getElementById('buyNowBtn');
+            const errorDiv = document.getElementById('variant-error');
+
+            // Inisialisasi status awal
+            disableButtons();
+
+            // Inisialisasi objek untuk menyimpan pilihan
+            variantData.attributes.forEach(attr => {
+                selectedAttributes[attr.id] = null;
+            });
+
+            // Fungsi untuk enable/disable buttons
+            function updateButtons(variant) {
+                if (variant && variant.stock > 0) {
+                    enableButtons();
+                } else {
+                    disableButtons();
+                }
+            }
+
+            function enableButtons() {
+                addToCartBtn.disabled = false;
+                buyNowBtn.disabled = false;
+                addToCartBtn.classList.remove('btn-secondary');
+                buyNowBtn.classList.remove('btn-secondary');
+                addToCartBtn.classList.add('btn-primary');
+                buyNowBtn.classList.add('btn-outline-primary');
+                errorDiv.classList.add('d-none');
+            }
+
+            function disableButtons() {
+                addToCartBtn.disabled = true;
+                buyNowBtn.disabled = true;
+                addToCartBtn.classList.remove('btn-primary');
+                buyNowBtn.classList.remove('btn-outline-primary');
+                addToCartBtn.classList.add('btn-secondary');
+                buyNowBtn.classList.add('btn-secondary');
+            }
+
+            // Fungsi untuk menampilkan error
+            function showError(message) {
+                errorDiv.textContent = message;
+                errorDiv.classList.remove('d-none');
+            }
+
+            // Fungsi untuk mencari varian yang sesuai
+            function findVariant() {
+                const selectedValues = Object.values(selectedAttributes).filter(Boolean);
+
+                if (selectedValues.length === variantData.attributes.length) {
+                    const foundVariant = variantData.variants.find(variant => {
+                        return selectedValues.every(val => variant.attributes.includes(val));
+                    });
+
+                    if (foundVariant) {
+                        if (foundVariant.stock <= 0) {
+                            showError('Varian ini sedang habis stok');
+                        } else {
+                            errorDiv.classList.add('d-none');
+                        }
+                    } else {
+                        showError('Kombinasi varian tidak tersedia');
+                    }
+
+                    updateVariantInfo(foundVariant);
+                    updateButtons(foundVariant);
+                } else {
+                    // Reset jika belum semua atribut dipilih
+                    errorDiv.classList.add('d-none');
+                    document.getElementById('selected-variant-info').classList.add('d-none');
+                    disableButtons();
+                }
+            }
+
+            // Fungsi untuk update tampilan info varian
+            function updateVariantInfo(variant) {
+                const infoDiv = document.getElementById('selected-variant-info');
+
+                if (variant) {
+                    infoDiv.classList.remove('d-none');
+                    document.getElementById('variant-sku').textContent = variant.sku;
+                    document.getElementById('variant-price').textContent =
+                        variant.price.toLocaleString('id-ID');
+                    document.getElementById('variant-stock').textContent = variant.stock;
+
+                    if (variant.image) {
+                        document.getElementById('variant-image').src =
+                            `/storage/${variant.image}`;
+                        document.getElementById('variant-image').style.display = 'block';
+                    } else {
+                        document.getElementById('variant-image').style.display = 'none';
+                    }
+                } else {
+                    infoDiv.classList.add('d-none');
+                }
+            }
+
+            // Event listener untuk setiap select
+            selectElements.forEach(select => {
+                select.addEventListener('change', function() {
+                    const attributeId = this.dataset.attributeId;
+                    selectedAttributes[attributeId] = this.value ? parseInt(this.value) : null;
+                    findVariant();
+                });
+            });
+        });
+    </script>
+
     <script>
         $(document).ready(function() {
             $("#addToCartBtn").click(function() {
