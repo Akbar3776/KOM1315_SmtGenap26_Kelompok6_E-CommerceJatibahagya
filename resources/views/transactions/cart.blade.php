@@ -24,16 +24,38 @@
                                 <div class="row d-flex align-items-center">
                                     {{-- Gambar Produk --}}
                                     <div class="col-6 col-md-3 px-2 py-2">
-                                        <img src="{{ asset('storage/' . $cartItem->product->image) }}"
-                                            alt="{{ $cartItem->product->name }}" class="img-fluid rounded-4"
-                                            style="height: 100px">
+                                        @if ($cartItem->variant && $cartItem->variant->image)
+                                            <img src="{{ asset('storage/' . $cartItem->variant->image) }}"
+                                                alt="{{ $cartItem->product->name }}" class="img-fluid rounded-4"
+                                                style="height: 100px">
+                                        @else
+                                            <img src="{{ asset('storage/' . $cartItem->product->image) }}"
+                                                alt="{{ $cartItem->product->name }}" class="img-fluid rounded-4"
+                                                style="height: 100px">
+                                        @endif
                                     </div>
+
                                     {{-- Deskripsi Produk --}}
                                     <div class="col-6 col-md-5">
                                         <h5 class="card-title">{{ $cartItem->product->name }}</h5>
-                                        <p class="card-text text-muted">Rp
-                                            {{ number_format($cartItem->product->price, 0, ',', '.') }}</p>
+
+                                        {{-- Tampilkan informasi varian jika ada --}}
+                                        @if ($cartItem->variant)
+                                            <p class="card-text text-muted mb-1">
+                                                @foreach ($cartItem->variant->attributeValues as $attribute)
+                                                    {{ $attribute->attribute->name }}: {{ $attribute->value }}@if (!$loop->last)
+                                                        ,
+                                                    @endif
+                                                @endforeach
+                                            </p>
+                                        @endif
+
+                                        <p class="card-text text-muted">
+                                            Rp
+                                            {{ number_format($cartItem->price ?? $cartItem->product->price, 0, ',', '.') }}
+                                        </p>
                                     </div>
+
                                     {{-- Jumlah dan Total --}}
                                     <div class="col-6 col-md-2">
                                         <div class="d-flex align-items-center mb-2">
@@ -47,9 +69,10 @@
                                         </div>
                                         <p class="font-weight-bold mb-0">
                                             Total: Rp
-                                            {{ number_format($cartItem->quantity * $cartItem->product->price, 0, ',', '.') }}
+                                            {{ number_format($cartItem->quantity * ($cartItem->price ?? $cartItem->product->price), 0, ',', '.') }}
                                         </p>
                                     </div>
+
                                     {{-- Aksi --}}
                                     <div class="col-6 col-md-2 mt-2 text-right">
                                         <button class="btn btn-sm btn-danger remove-item"
@@ -67,7 +90,15 @@
                 <div class="col-12 col-md-6">
                     <h4 class="fw-bolder">Total:
                         <span class="text-danger">Rp
-                            {{ number_format($cartItems->sum(fn($item) => $item->quantity * $item->product->price), 0, ',', '.') }}
+                            {{ number_format(
+                                $cartItems->sum(function ($item) {
+                                    $price = $item->price ?? $item->product->price;
+                                    return $item->quantity * $price;
+                                }),
+                                0,
+                                ',',
+                                '.',
+                            ) }}
                         </span>
                     </h4>
                 </div>
