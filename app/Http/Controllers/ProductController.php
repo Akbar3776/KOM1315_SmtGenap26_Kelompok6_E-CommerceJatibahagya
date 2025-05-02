@@ -29,7 +29,8 @@ class ProductController extends Controller
         $search = $request->input('search');
 
         // Query produk berdasarkan filter
-        $query = Product::query();
+        $query = Product::query()
+            ->with(['attributes.values', 'variants.attributeValues']);;
 
         // Filter berdasarkan kategori
         if ($categoryId) {
