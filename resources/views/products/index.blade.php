@@ -122,7 +122,7 @@
                                 alt="{{ $product->name }}" />
                         </a>
                         <div class="card-body d-flex flex-column">
-                            <h6 class="card-title mb-2" style="text-align: justify">
+                            <h6 class="card-title mb-2" style="">
                                 <a href="{{ route('products.detail', $product->id) }}">
                                     {{ $product->name }}
                                 </a>
