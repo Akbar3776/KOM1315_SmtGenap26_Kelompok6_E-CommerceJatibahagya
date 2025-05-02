@@ -29,9 +29,9 @@ return new class extends Migration
             $table->index('variant_id');
 
             // If you want to add foreign key constraints:
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            // $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            // $table->foreign('variant_id')->references('id')->on('product_variants')->onDelete('set null');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('variant_id')->references('id')->on('product_variants')->onDelete('set null');
         });
     }
 
