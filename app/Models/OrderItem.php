@@ -22,9 +22,14 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'variant_id',
         'quantity',
         'price_per_item',
         'total_price',
+    ];
+
+    protected $casts = [
+        'options' => 'array',
     ];
 
     public function order()
@@ -35,5 +40,10 @@ class OrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class);
     }
 }
