@@ -31,7 +31,9 @@ class CartController extends Controller
      */
     public function getCheckoutPage()
     {
-        $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
+        $cartItems = Cart::with(['product', 'variant'])
+            ->where('user_id', Auth::id())
+            ->get();
 
         return view('transactions.checkout', compact('cartItems'));
     }
