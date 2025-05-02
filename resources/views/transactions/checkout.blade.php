@@ -172,7 +172,7 @@
             // Function untuk update total harga ketika metode pengiriman berubah
             function updateTotal() {
                 let shippingCost = parseInt($("input[name='shipping_method']:checked").data("cost")) ||
-                    0; // Pastikan ada nilai default 0
+                    0;
                 let subtotal =
                     {{ $cartItems->sum(function ($item) {
                         return $item->quantity * ($item->price ?? $item->product->price);
