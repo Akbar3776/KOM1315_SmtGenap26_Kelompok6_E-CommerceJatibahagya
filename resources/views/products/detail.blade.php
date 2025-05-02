@@ -354,6 +354,7 @@
                 const infoDiv = document.getElementById('selected-variant-info');
 
                 if (variant) {
+                    currentVariant = variant; // Simpan varian yang dipilih
                     infoDiv.classList.remove('d-none');
                     document.getElementById('variant-sku').textContent = variant.sku;
                     document.getElementById('variant-price').textContent =
@@ -368,6 +369,7 @@
                         document.getElementById('variant-image').style.display = 'none';
                     }
                 } else {
+                    currentVariant = null;
                     infoDiv.classList.add('d-none');
                 }
             }
@@ -385,42 +387,72 @@
 
     <script>
         $(document).ready(function() {
-            $("#addToCartBtn").click(function() {
-                var productId = {{ $product->id }};
-                var quantity = 1;
-
-                $.ajax({
-                    url: "{{ route('cart.add') }}",
-                    type: "POST",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        product_id: productId,
-                        quantity: quantity
-                    },
-                    success: function(response) {
-                        showToast("Produk berhasil ditambahkan ke keranjang!");
-                    },
-                    error: function(xhr) {
-                        showToast("Gagal menambahkan ke keranjang!", true);
-                        console.log(xhr.responseText);
-                    }
-                });
-            });
-
-            function showToast(message, isError = false) {
-                var toast = $("#liveToast");
-                toast.find(".toast-body").text(message);
-
-                if (isError) {
-                    toast.find(".toast-header strong").text("Error");
-                    toast.find(".toast-header").addClass("bg-danger text-white");
-                } else {
-                    toast.find(".toast-header strong").text("Sukses");
-                    toast.find(".toast-header").removeClass("bg-danger text-white");
+            // Event listener untuk tombol Tambah ke Keranjang
+            addToCartBtn.addEventListener('click', function() {
+                if (!currentVariant && variantData.attributes.length > 0) {
+                    showError('Silakan pilih varian terlebih dahulu');
+                    return;
                 }
 
-                var bsToast = new bootstrap.Toast(toast);
+                const productId = {{ $product->id }};
+                const variantId = currentVariant ? currentVariant.id : null;
+                const quantity = 1;
+
+                // Kirim request AJAX
+                fetch('{{ route('cart.add') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            variant_id: variantId,
+                            quantity: quantity
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast(data.message);
+                            updateCartCount(data.cart_count);
+                        } else {
+                            showToast(data.message, true);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('Terjadi kesalahan saat menambahkan ke keranjang', true);
+                    });
+            });
+
+            // Fungsi untuk menampilkan toast notifikasi
+            function showToast(message, isError = false) {
+                const toast = document.getElementById('liveToast');
+                const toastBody = toast.querySelector('.toast-body');
+                const toastHeader = toast.querySelector('.toast-header');
+
+                toastBody.textContent = message;
+
+                if (isError) {
+                    toastHeader.classList.add('bg-danger');
+                    toastHeader.classList.remove('bg-success');
+                } else {
+                    toastHeader.classList.add('bg-success');
+                    toastHeader.classList.remove('bg-danger');
+                }
+
+                const bsToast = new bootstrap.Toast(toast);
                 bsToast.show();
+            }
+
+            // Fungsi untuk update jumlah keranjang
+            function updateCartCount(count) {
+                const cartCountElements = document.querySelectorAll('.cart-count');
+                cartCountElements.forEach(el => {
+                    el.textContent = count;
+                });
             }
         });
     </script>
