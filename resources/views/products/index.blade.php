@@ -129,7 +129,20 @@
                             </h6>
                             <p class="card-text">
                                 <span class="fw-normal text-black d-flex mb-0">
-                                    Rp {{ number_format($product->price, 0, ',', '.') }}
+                                    @if ($product->variants->isNotEmpty())
+                                        @php
+                                            $minPrice = $product->variants->min('price');
+                                            $maxPrice = $product->variants->max('price');
+                                        @endphp
+
+                                        @if ($minPrice == $maxPrice)
+                                            Rp {{ number_format($minPrice, 0, ',', '.') }}
+                                        @else
+                                            Rp {{ number_format($minPrice, 0, ',', '.') }}
+                                        @endif
+                                    @else
+                                        Rp {{ number_format($product->price, 0, ',', '.') }}
+                                    @endif
                                 </span>
                                 <small class="fw-light text-muted">
                                     <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
