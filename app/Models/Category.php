@@ -6,19 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Category extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'parent_id',
+        'name',
+        'slug',
+        'parent_id',
+        'image'
     ];
 
     /**
      * Relasi ke kategori induk (jika ada)
-     *
-     * @return BelongsTo
      */
     public function parent(): BelongsTo
     {
@@ -27,8 +29,6 @@ class Category extends Model
 
     /**
      * Relasi ke kategori anak (jika ada)
-     *
-     * @return HasMany
      */
     public function children(): HasMany
     {
@@ -37,11 +37,29 @@ class Category extends Model
 
     /**
      * Relasi ke produk yang termasuk dalam kategori ini
-     *
-     * @return HasMany
      */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'category_id');
+    }
+
+    /**
+     * Accessor untuk URL gambar lengkap
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? Storage::url($this->image) : null;
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Category $category) {
+            if ($category->image) {
+                Storage::delete($category->image);
+            }
+        });
     }
 }

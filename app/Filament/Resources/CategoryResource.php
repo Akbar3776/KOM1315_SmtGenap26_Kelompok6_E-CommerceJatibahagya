@@ -22,7 +22,7 @@ class CategoryResource extends Resource
     protected static ?string $modelLabel = 'Kategori Produk';
 
     protected static ?string $navigationIcon = 'heroicon-o-folder';
-    
+
     protected static ?string $navigationGroup = 'Produk';
 
     protected static ?int $navigationSort = 4;
@@ -36,7 +36,8 @@ class CategoryResource extends Resource
                 ->maxLength(255)
                 ->placeholder('Masukkan nama kategori')
                 ->live(debounce: 500) // Untuk auto-generate slug
-                ->afterStateUpdated(fn ($state, callable $set) => 
+                ->afterStateUpdated(
+                    fn($state, callable $set) =>
                     $set('slug', Str::slug($state))
                 ),
 
@@ -47,11 +48,19 @@ class CategoryResource extends Resource
                 ->disabled() // Nonaktifkan input manual
                 ->dehydrated(), // Simpan slug ke database
 
+            Forms\Components\FileUpload::make('image')
+                ->label('Gambar Kategori')
+                ->image()
+                ->directory('categories')
+                ->maxSize(2048) // 2MB
+                ->imageResizeMode('cover') // atau 'contain' tergantung kebutuhan
+                ->imageCropAspectRatio('4:3'), // Rasio 3:4
+
             Forms\Components\Select::make('parent_id')
                 ->label('Kategori Induk')
                 ->relationship('parent', 'name')
                 ->nullable()
-                ->searchable()
+                ->searchable(false)
                 ->preload(), // Meningkatkan UX dalam memilih kategori
         ]);
     }
@@ -73,6 +82,9 @@ class CategoryResource extends Resource
                 ->sortable()
                 ->searchable(),
 
+            Tables\Columns\ImageColumn::make('image')
+                ->label('Gambar Produk'),
+
             Tables\Columns\TextColumn::make('parent.name')
                 ->label('Kategori Induk')
                 ->sortable()
@@ -86,20 +98,20 @@ class CategoryResource extends Resource
                 ->label('Diperbarui Pada')
                 ->dateTime(),
         ])
-        ->filters([
-            Tables\Filters\SelectFilter::make('parent_id')
-                ->label('Kategori Induk')
-                ->relationship('parent', 'name')
-                ->searchable(),
-        ])
-        ->actions([
-            Tables\Actions\ViewAction::make(),
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ]);
+            ->filters([
+                Tables\Filters\SelectFilter::make('parent_id')
+                    ->label('Kategori Induk')
+                    ->relationship('parent', 'name')
+                    ->searchable(),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getRelations(): array
