@@ -18,9 +18,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\FileUpload;
+use Filament\Support\RawJs;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\HtmlString;
 
 class ProductResource extends Resource
 {
@@ -49,8 +52,19 @@ class ProductResource extends Resource
 
                         Forms\Components\TextInput::make('price')
                             ->label('Harga Dasar')
+                            ->prefix('Rp')
+                            ->currencyMask(thousandSeparator: ',',decimalSeparator: '.',precision: 0)
                             ->numeric()
                             ->required(),
+
+                        Forms\Components\TextInput::make('discount')
+                            ->label('Diskon Produk (%)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->default(0)
+                            ->suffix('%')
+                            ->helperText('Masukkan persentase diskon (0-100)'),
 
                         Forms\Components\TextInput::make('stock')
                             ->label('Stock Awal')
@@ -72,6 +86,11 @@ class ProductResource extends Resource
                             ->image()
                             ->directory('products'),
 
+                        Forms\Components\Toggle::make('is_new_product')
+                            ->label('Produk Baru?')
+                            ->default(false)
+                            ->inline(false),
+
                         Forms\Components\RichEditor::make('description')
                             ->label('Deskripsi')
                             ->columnSpanFull(),
@@ -79,6 +98,9 @@ class ProductResource extends Resource
 
                 Forms\Components\Repeater::make('attributes')
                     ->relationship()
+                    ->itemLabel(function (array $state): ?string {
+                        return $state['name'] ?? null;
+                    })
                     ->label('Varian Produk')
                     ->schema([
                         Forms\Components\TextInput::make('name')
@@ -96,22 +118,49 @@ class ProductResource extends Resource
                             ->addActionLabel('Tambah Nilai')
                             ->columns(1)
                     ])
-                    ->collapseAllAction(
-                        fn(Action $action) => $action->label('Collapse all members'),
-                    )
-                    ->addActionLabel('Tambah Varian')
+                    ->collapsed()
+                    ->addActionLabel('Tambah Label Varian')
                     ->columns(1),
 
                 Forms\Components\Repeater::make('variants')
                     ->relationship()
                     ->label('Varian')
+                    ->itemLabel(function (array $state): ?string {
+                        if (empty($state['attribute_combination'])) {
+                            return null;
+                        }
+
+                        try {
+                            $combination = json_decode($state['attribute_combination'], true);
+                            $values = AttributeValue::whereIn('id', $combination)
+                                ->with('attribute')
+                                ->get()
+                                ->map(fn($value) => $value->attribute->name . ': ' . $value->value)
+                                ->join(', ');
+
+                            return $values ?: 'Varian #' . ($state['sku'] ?? '');
+                        } catch (\Exception $e) {
+                            return 'Varian #' . ($state['sku'] ?? '');
+                        }
+                    })
                     ->schema([
                         Forms\Components\TextInput::make('sku')
                             ->label('SKU'),
 
                         Forms\Components\TextInput::make('price')
                             ->label('Harga')
+                            ->currencyMask(thousandSeparator: '.',decimalSeparator: ',',precision: 0)
+                            ->prefix('Rp')
                             ->numeric(),
+
+                        Forms\Components\TextInput::make('discount')
+                            ->label('Diskon Varian (%)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->default(0)
+                            ->suffix('%')
+                            ->helperText('Kosongkan atau 0 untuk menggunakan diskon produk'),
 
                         Forms\Components\TextInput::make('stock')
                             ->label('Stok')
@@ -119,69 +168,124 @@ class ProductResource extends Resource
 
                         Forms\Components\Select::make('attribute_combination')
                             ->label('Pilih Kombinasi Varian')
-                            ->options(function ($get) {
-                                $productId = $get('../../id'); // Gunakan parent product ID
-
-                                // Jika product belum disimpan, return empty
-                                if (!$productId) {
-                                    return [];
-                                }
+                            ->options(function ($get, $state, ?ProductVariant $record = null) {
+                                $productId = $get('../../id');
+                                if (!$productId) return [];
 
                                 $attributes = Attribute::with('values')
                                     ->where('product_id', $productId)
                                     ->get();
 
-                                return static::generateCombinations($attributes);
+                                $allCombinations = static::generateCombinations($attributes);
+
+                                if ($record?->exists && $record->product) { 
+                                    $usedCombinations = $record->product->variants()
+                                        ->where('id', '!=', $record->id)
+                                        ->with('attributeValues')
+                                        ->get()
+                                        ->map(function ($variant) {
+                                            return json_encode($variant->attributeValues->pluck('id')->sort()->toArray());
+                                        })
+                                        ->toArray();
+
+                                    return array_filter($allCombinations, function ($key) use ($usedCombinations) {
+                                        return !in_array($key, $usedCombinations);
+                                    }, ARRAY_FILTER_USE_KEY);
+                                }
+
+                                return $allCombinations;
                             })
                             ->required()
                             ->searchable(false)
                             ->reactive()
-                            ->disabled(fn($get) => empty($get('../../id'))) // Disable jika product belum disimpan
+                            ->disabled(fn($get) => empty($get('../../id')))
                             ->placeholder(function ($get) {
                                 return empty($get('../../id'))
                                     ? 'Simpan produk terlebih dahulu'
                                     : 'Pilih kombinasi varian';
                             })
-                            ->afterStateHydrated(function ($component, $state) {
-                                if (is_array($state)) {
-                                    $component->state(json_encode(
-                                        $state instanceof Collection
-                                            ? $state->pluck('id')->toArray()
-                                            : $state
-                                    ));
+                            ->afterStateHydrated(function ($component, $state, ?ProductVariant $record = null) {
+                                if (!$state && $record?->exists) {
+                                    $ids = $record->attributeValues()->pluck('attribute_values.id')->toArray();
+                                    $component->state(json_encode($ids));
+                                } elseif (is_array($state)) {
+                                    $component->state(json_encode($state));
+                                } elseif ($state instanceof Collection) {
+                                    $component->state(json_encode($state->pluck('id')->toArray()));
                                 }
                             })
                             ->dehydrateStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return [];
-                                }
-                                return json_decode($state, true);
+                                return is_array($state) ? json_encode($state) : $state;
                             })
                             ->saveRelationshipsUsing(function (ProductVariant $variant, $state) {
-                                $attributeValueIds = json_decode($state, true);
+                                try {
+                                    Log::debug('Pre-Save State', ['raw_state' => $state]);
 
-                                // Validasi
-                                if (!is_array($attributeValueIds)) {
-                                    return;
+                                    $ids = [];
+                                    if (is_string($state)) {
+                                        $ids = json_decode($state, true) ?? [];
+                                    } elseif (is_array($state)) {
+                                        $ids = $state;
+                                    }
+
+                                    $validIds = array_filter(array_unique($ids), function ($id) {
+                                        return is_numeric($id) && $id > 0;
+                                    });
+
+                                    Log::debug('Valid IDs to Sync', ['ids' => $validIds]);
+
+                                    $variant->attributeValues()->sync($validIds);
+                                    $variant->update([
+                                        'sku' => static::generateSku($variant->product, $validIds)
+                                    ]);
+
+                                    Log::debug('Post-Save Verification', [
+                                        'attached' => $variant->attributeValues->pluck('id')
+                                    ]);
+                                } catch (\Exception $e) {
+                                    Log::error('Sync Failed', [
+                                        'error' => $e->getMessage(),
+                                        'trace' => $e->getTraceAsString()
+                                    ]);
+                                    throw $e;
                                 }
-
-                                // Filter hanya nilai integer
-                                $validIds = array_filter($attributeValueIds, 'is_numeric');
-
-                                // Gunakan sync dengan array biasa
-                                $variant->attributeValues()->sync($validIds);
-
-                                $variant->update([
-                                    'sku' => static::generateSku($variant->product, $validIds)
-                                ]);
                             }),
+
+                        Forms\Components\Fieldset::make('Kombinasi Varian')
+                            ->schema([
+                                Forms\Components\Placeholder::make('existing_combination')
+                                    ->content(function ($get) {
+                                        $combination = $get('attribute_combination');
+                                        if (empty($combination)) {
+                                            return 'Belum memilih kombinasi';
+                                        }
+
+                                        try {
+                                            $ids = json_decode($combination, true);
+                                            $values = AttributeValue::whereIn('id', $ids)
+                                                ->with('attribute')
+                                                ->get()
+                                                ->map(
+                                                    fn($value) =>
+                                                    '<strong>' . $value->attribute->name . '</strong>: ' . $value->value
+                                                )
+                                                ->implode('<br>');
+
+                                            return new HtmlString($values);
+                                        } catch (\Exception $e) {
+                                            return 'Kombinasi tidak valid';
+                                        }
+                                    })
+                                    ->hidden(fn($get) => empty($get('attribute_combination'))),
+                            ]),
 
                         Forms\Components\FileUpload::make('image')
                             ->label('Gambar Varian')
                             ->image()
                             ->directory('product-variants')
                     ])
-                    ->addActionLabel('Tambah Varian')
+                    ->collapsed()
+                    ->addActionLabel('Tambah Varian Produk')
                     ->columns(1),
             ]);
     }
@@ -308,7 +412,7 @@ class ProductResource extends Resource
 
     protected static function generateSku($product, $attributeValues)
     {
-        $prefix = substr($product->name, 0, 3);
+        $prefix = strtoupper(substr($product->name, 0, 3));
         $codes = AttributeValue::whereIn('id', $attributeValues)
             ->orderBy('attribute_id')
             ->get()
