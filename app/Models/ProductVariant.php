@@ -39,6 +39,9 @@ class ProductVariant extends Model
 
     public function attributeValues()
     {
-        return $this->belongsToMany(AttributeValue::class, 'product_variant_values');
+        return $this->belongsToMany(AttributeValue::class, 'product_variant_values')
+            ->using(ProductVariantValue::class)
+            ->withTimestamps()
+            ->withPivot('id');
     }
 }
