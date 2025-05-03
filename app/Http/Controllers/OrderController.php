@@ -197,8 +197,7 @@ class OrderController extends Controller
         // Ambil pesanan berdasarkan ID dan user
         $order = Order::where('order_code', $id)
             ->where('user_id', $user->id)
-            ->with('orderItems.product')
-            ->with('userAddress')
+            ->with(['orderItems.product', 'orderItems.variant', 'userAddress'])
             ->first();
 
         if (!$order) {
