@@ -146,18 +146,34 @@
                                     <div class="card shadow-sm border-0 mb-3">
                                         <div class="row g-0">
                                             <div class="col-md-3">
-                                                <img src="{{ asset('storage/' . $item->product->image) }}"
-                                                    class="img-fluid rounded-start" alt="Product Image">
+                                                @if ($item->variant && $item->variant->image)
+                                                    <img src="{{ asset('storage/' . $item->variant->image) }}"
+                                                        class="img-fluid rounded-start" alt="{{ $item->product->name }}">
+                                                @else
+                                                    <img src="{{ asset('storage/' . $item->product->image) }}"
+                                                        class="img-fluid rounded-start" alt="{{ $item->product->name }}">
+                                                @endif
                                             </div>
                                             <div class="col-md-9">
                                                 <div class="card-body">
                                                     <h6 class="card-title">{{ $item->product->name }}</h6>
+
+                                                    @if ($item->variant)
+                                                        <div class="text-muted small mb-2">
+                                                            {{ $item->variant->name }}
+                                                            @foreach ($item->variant->attributeValues as $attribute)
+                                                                <strong>{{ $attribute->attribute->name }}:</strong>
+                                                                {{ $attribute->value }}
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+
                                                     <p class="card-text">
                                                         <strong>Jumlah:</strong> {{ $item->quantity }} <br>
                                                         <strong>Harga:</strong> Rp
-                                                        {{ number_format($item->product->price, 0, ',', '.') }} <br>
+                                                        {{ number_format($item->price_per_item, 0, ',', '.') }} <br>
                                                         <strong>Subtotal:</strong> Rp
-                                                        {{ number_format($item->quantity * $item->product->price, 0, ',', '.') }}
+                                                        {{ number_format($item->total_price, 0, ',', '.') }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -202,7 +218,7 @@
                                         <th class="text-start">No. Resi</th>
                                         <td>
                                             @if ($order->shippings && $order->shippings->tracking_number)
-                                                <span class="badge bg-info">{{ $order->shippings->tracking_number }}</span>
+                                                <span class="badge bg-info py-2 px-2">{{ $order->shippings->tracking_number }}</span>
                                                 <button type="button" class="btn btn-sm btn-outline-primary"
                                                     data-bs-toggle="modal" data-bs-target="#shippingDetailsModal">
                                                     <i class="fas fa-search"></i> Lacak Resi
