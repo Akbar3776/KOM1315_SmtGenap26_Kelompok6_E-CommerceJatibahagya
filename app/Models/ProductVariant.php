@@ -14,7 +14,23 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProductVariant extends Model
 {
-    protected $fillable = ['product_id', 'sku', 'price', 'stock', 'image'];
+    protected $fillable = [
+        'product_id',
+        'sku',
+        'price',
+        'discount',
+        'stock',
+        'image'
+    ];
+
+    protected $casts = [
+        'discount' => 'float',
+    ];
+
+    public function getFinalPriceAttribute()
+    {
+        return $this->price - ($this->price * ($this->discount / 100));
+    }
 
     public function product()
     {
