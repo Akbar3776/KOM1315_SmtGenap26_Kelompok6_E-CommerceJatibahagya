@@ -24,11 +24,18 @@ class Product extends Model
         'name',
         'description',
         'price',
+        'discount',
+        'is_new_product',
         'stock',
         'category_id',
         'brand_id',
         'image',
         'status',
+    ];
+
+    protected $casts = [
+        'is_new_product' => 'boolean',
+        'discount' => 'float',
     ];
 
     public function setImageAttribute($value)
@@ -38,6 +45,11 @@ class Product extends Model
         } elseif (!$this->exists) {
             $this->attributes['image'] = 'images/dummy/dummy-' . rand(1, 5) . '.png';
         }
+    }
+
+    public function getFinalPriceAttribute()
+    {
+        return $this->price - ($this->price * ($this->discount / 100));
     }
 
     public function category()
