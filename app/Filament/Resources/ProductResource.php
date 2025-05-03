@@ -147,11 +147,13 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('sku')
                             ->label('SKU')
                             ->default(function ($get) {
+                                // Ambil 3 huruf pertama dari nama produk (jika ada)
                                 $productPrefix = strtoupper(substr($get('../../name') ?? '', 0, 3));
 
                                 $randomPart1 = strtoupper(Str::random(4));
                                 $randomPart2 = strtoupper(Str::random(4));
 
+                                // Gabungkan semua bagian
                                 return sprintf(
                                     '%s-%s-%s',
                                     $productPrefix ?: 'SKU',
@@ -343,15 +345,6 @@ class ProductResource extends Resource
                 ->label('Status Produk')
                 ->sortable(),
 
-            Tables\Columns\TextColumn::make('variants.sku')
-                ->label('Varian SKU'),
-
-            Tables\Columns\TextColumn::make('variants.price')
-                ->label('Harga Varian')
-                ->money('IDR'),
-
-            Tables\Columns\TextColumn::make('variants.stock')
-                ->label('Stok Varian'),
         ])
             ->filters([
                 SelectFilter::make('category_id')
