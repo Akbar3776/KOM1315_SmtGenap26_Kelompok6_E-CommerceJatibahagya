@@ -53,7 +53,7 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('price')
                             ->label('Harga Dasar')
                             ->prefix('Rp')
-                            ->currencyMask(thousandSeparator: ',',decimalSeparator: '.',precision: 0)
+                            ->currencyMask(thousandSeparator: ',', decimalSeparator: '.', precision: 0)
                             ->numeric()
                             ->required(),
 
@@ -145,11 +145,28 @@ class ProductResource extends Resource
                     })
                     ->schema([
                         Forms\Components\TextInput::make('sku')
-                            ->label('SKU'),
+                            ->label('SKU')
+                            ->default(function ($get) {
+                                $productPrefix = strtoupper(substr($get('../../name') ?? '', 0, 3));
+
+                                $randomPart1 = strtoupper(Str::random(4));
+                                $randomPart2 = strtoupper(Str::random(4));
+
+                                return sprintf(
+                                    '%s-%s-%s',
+                                    $productPrefix ?: 'SKU',
+                                    $randomPart1,
+                                    $randomPart2
+                                );
+                            })
+                            ->disabled(fn($get) => empty($get('../../name')))
+                            ->dehydrated()
+                            ->required()
+                            ->unique(ProductVariant::class, 'sku', ignoreRecord: true),
 
                         Forms\Components\TextInput::make('price')
                             ->label('Harga')
-                            ->currencyMask(thousandSeparator: '.',decimalSeparator: ',',precision: 0)
+                            ->currencyMask(thousandSeparator: '.', decimalSeparator: ',', precision: 0)
                             ->prefix('Rp')
                             ->numeric(),
 
@@ -178,7 +195,7 @@ class ProductResource extends Resource
 
                                 $allCombinations = static::generateCombinations($attributes);
 
-                                if ($record?->exists && $record->product) { 
+                                if ($record?->exists && $record->product) {
                                     $usedCombinations = $record->product->variants()
                                         ->where('id', '!=', $record->id)
                                         ->with('attributeValues')
