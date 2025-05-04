@@ -122,31 +122,50 @@
                                 alt="{{ $product->name }}" />
                         </a>
                         <div class="card-body d-flex flex-column">
-                            <h6 class="card-title mb-2" style="">
+                            <h6 class="card-title mb-1" style="">
                                 <a href="{{ route('products.detail', $product->id) }}">
                                     {{ $product->name }}
                                 </a>
                             </h6>
                             <p class="card-text">
-                                <span class="fw-normal text-black d-flex mb-0">
-                                    @if ($product->variants->isNotEmpty())
-                                        @php
-                                            $minPrice = $product->variants->min('price');
-                                            $maxPrice = $product->variants->max('price');
-                                        @endphp
+                            <div class="fw-normal text-black mb-0">
+                                @if ($product->variants->isNotEmpty())
+                                    @php
+                                        $minVariant = $product->variants->sortBy('final_price')->first();
+                                        $hasDiscount = $minVariant->discount > 0;
+                                    @endphp
 
-                                        @if ($minPrice == $maxPrice)
-                                            Rp {{ number_format($minPrice, 0, ',', '.') }}
-                                        @else
-                                            Rp {{ number_format($minPrice, 0, ',', '.') }}
-                                        @endif
-                                    @else
-                                        Rp {{ number_format($product->price, 0, ',', '.') }}
+                                    @if ($hasDiscount)
+                                        <small class="text-muted text-decoration-line-through d-block mb-1">
+                                            Rp {{ number_format($minVariant->price, 0, ',', '.') }}
+                                        </small>
                                     @endif
-                                </span>
-                                <small class="fw-light text-muted">
-                                    <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
-                                </small>
+
+                                    <span class="text-primary d-block">
+                                        Rp {{ number_format($minVariant->final_price, 0, ',', '.') }}
+                                        @if ($hasDiscount)
+                                            <small class="text-danger fw-bold ms-1">-{{ $minVariant->discount }}%</small>
+                                        @endif
+                                    </span>
+                                @else
+                                    @if ($product->discount > 0)
+                                        <small class="text-muted text-decoration-line-through d-block mb-1">
+                                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                                        </small>
+                                        <span class="text-primary d-block">
+                                            Rp {{ number_format($product->final_price, 0, ',', '.') }}
+                                            <small class="text-danger fw-bold ms-1">-{{ $product->discount }}%</small>
+                                        </span>
+                                    @else
+                                        <span class="text-primary d-block">
+                                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                                        </span>
+                                    @endif
+                                @endif
+                            </div>
+                            <small class="fw-light text-muted d-block">
+                                <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
+                            </small>
                             </p>
                             <div class="mt-auto">
                                 <button type="button" class="btn btn-sm btn-primary w-100" id="addToCartBtn"

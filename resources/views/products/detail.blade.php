@@ -29,45 +29,54 @@
                             <span class="bi bi-star-half"></span>
                             <span class="bi bi-star"></span>
                         </div>
-                        <small class="ms-2 fw-bolder text-primary">(4.5 dari 5, 250 Ulasan)</small>
+                        <small class="ms-2 fw-bolder text-primary">(4.6 dari 5, 250 Ulasan)</small>
                     </div>
                     <hr />
                 </div>
 
                 <div id="PD-Price">
                     @php
-                        $hargaAsli = $product->price;
-                        $diskonPersen = $product->discount_percentage ?? 0;
-                        $hargaDiskon = $hargaAsli - ($hargaAsli * $diskonPersen) / 100;
-
                         $hasVariants = $variants->isNotEmpty();
-                        $variantPrices = $variants->pluck('price');
                     @endphp
 
                     @if ($hasVariants)
                         @php
-                            $minPrice = $variantPrices->min();
-                            $maxPrice = $variantPrices->max();
+                            $finalPrices = $variants->map(fn($v) => $v->final_price);
+                            $originalPrices = $variants->pluck('price');
+                            $maxDiscount = $variants->max('discount');
+                            $minPrice = $finalPrices->min();
+                            $maxPrice = $finalPrices->max();
+                            $hasAnyDiscount = $variants->contains(fn($v) => $v->discount > 0);
                         @endphp
+
+                        @if ($hasAnyDiscount)
+                            <h4 class="text-muted text-decoration-line-through mb-1">
+                                Rp {{ number_format($originalPrices->max(), 0, ',', '.') }}
+                            </h4>
+                        @endif
 
                         <h4 class="text-primary">
                             Rp {{ number_format($minPrice, 0, ',', '.') }}
                             @if ($minPrice !== $maxPrice)
                                 - Rp {{ number_format($maxPrice, 0, ',', '.') }}
                             @endif
+
+                            @if ($hasAnyDiscount && $maxDiscount > 0)
+                                <small class="text-danger fw-bold">-{{ $maxDiscount }}%</small>
+                            @endif
                         </h4>
                     @else
-                        @if ($diskonPersen > 0)
+                        @if ($product->discount > 0)
                             <h4 class="text-muted text-decoration-line-through mb-1">
-                                Rp {{ number_format($hargaAsli, 0, ',', '.') }}
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
                             </h4>
                             <h4 class="text-primary">
-                                Rp {{ number_format($hargaDiskon, 0, ',', '.') }}
-                                <small class="text-danger fw-bold">-{{ $diskonPersen }}%</small>
+                                Rp {{ number_format($product->final_price, 0, ',', '.') }}
+                                <small class="text-danger fw-bold">-{{ $product->discount }}%</small>
                             </h4>
                         @else
                             <h4 class="text-primary">
-                                Rp {{ number_format($hargaAsli, 0, ',', '.') }}
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
                             </h4>
                         @endif
                     @endif
@@ -354,16 +363,43 @@
                 const infoDiv = document.getElementById('selected-variant-info');
 
                 if (variant) {
-                    currentVariant = variant; // Simpan varian yang dipilih
+                    currentVariant = variant;
                     infoDiv.classList.remove('d-none');
+
                     document.getElementById('variant-sku').textContent = variant.sku;
-                    document.getElementById('variant-price').textContent =
-                        variant.price.toLocaleString('id-ID');
                     document.getElementById('variant-stock').textContent = variant.stock;
 
+                    const hargaContainer = document.getElementById('variant-price');
+                    const originalPrice = Number(variant.price);
+                    const discount = Number(variant.discount ?? 0);
+                    const finalPrice = originalPrice - (originalPrice * discount / 100);
+
+                    let hargaHTML = '';
+
+                    console.log(variant);
+
+                    if (discount > 0) {
+                        hargaHTML += `
+                            <span class="text-muted text-decoration-line-through me-2">
+                                ${originalPrice.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
+                            </span>
+                            <span class="text-primary fw-bold">
+                                ${finalPrice.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
+                            </span>
+                            <small class="text-danger fw-bold ms-2">-${discount}%</small>
+                        `;
+                    } else {
+                        hargaHTML += `
+                            <span class="text-primary fw-bold">
+                                ${originalPrice.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
+                            </span>
+                        `;
+                    }
+
+                    hargaContainer.innerHTML = hargaHTML;
+
                     if (variant.image) {
-                        document.getElementById('variant-image').src =
-                            `/storage/${variant.image}`;
+                        document.getElementById('variant-image').src = `/storage/${variant.image}`;
                         document.getElementById('variant-image').style.display = 'block';
                     } else {
                         document.getElementById('variant-image').style.display = 'none';
