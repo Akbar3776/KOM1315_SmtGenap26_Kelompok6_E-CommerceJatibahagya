@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -134,7 +135,7 @@ class CartController extends Controller
                 'product_id' => $product->id,
                 'variant_id' => $variant ? $variant->id : null,
                 'quantity' => $request->quantity,
-                'price' => $variant ? $variant->price : $product->price,
+                'price' => $variant ? $variant->final_price : $product->final_price,
                 'options' => [
                     'image' => $variant && $variant->image
                         ? $variant->image
@@ -203,9 +204,7 @@ class CartController extends Controller
         $cartItem->update(['quantity' => $request->quantity]);
 
         // Hitung ulang total keranjang
-        $cartTotal = Cart::where('user_id', Auth::id())->get()->sum(function ($item) {
-            return $item->price * $item->quantity;
-        });
+        $cartTotal = Cart::where('user_id', Auth::id())->sum(DB::raw('price * quantity'));
 
         return response()->json([
             'success' => true,
@@ -213,7 +212,14 @@ class CartController extends Controller
             'new_quantity' => $cartItem->quantity,
             'item_subtotal' => number_format($cartItem->price * $cartItem->quantity, 0, ',', '.'),
             'cart_total' => number_format($cartTotal, 0, ',', '.'),
-            'cart_count' => Cart::where('user_id', Auth::id())->sum('quantity')
+            'cart_count' => Cart::where('user_id', Auth::id())->sum('quantity'),
+            'original_price' => $cartItem->variant_id
+                ? $cartItem->product->variants->find($cartItem->variant_id)->price
+                : $cartItem->product->price,
+            'discount' => $cartItem->variant_id
+                ? $cartItem->product->variants->find($cartItem->variant_id)->discount
+                : $cartItem->product->discount,
+
         ], 200);
     }
 
