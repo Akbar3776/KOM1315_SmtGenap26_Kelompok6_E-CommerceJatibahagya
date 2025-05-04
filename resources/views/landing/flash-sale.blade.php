@@ -1,11 +1,9 @@
 <div class="position-relative">
 
     <!-- Navigasi Swiper di luar container -->
-    <div class="swiper-button-prev bg-primary text-white px-3 py-3 rounded-4"
-        style="position: absolute; top: 50%; left: 0; transform: translate(-100%, -50%); z-index: 10;">
+    <div class="swiper-button-prev bg-secondary text-primary px-3 py-3 mx-0 rounded-4">
     </div>
-    <div class="swiper-button-next bg-primary text-white px-3 py-3 rounded-4"
-        style="position: absolute; top: 50%; right: 0; transform: translate(100%, -50%); z-index: 999;">
+    <div class="swiper-button-next bg-secondary text-primary px-3 py-3 mx-0 rounded-4">
     </div>
 
     <!-- Container utama -->
