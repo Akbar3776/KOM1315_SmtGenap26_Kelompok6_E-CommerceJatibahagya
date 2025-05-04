@@ -189,8 +189,8 @@
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="container d-flex justify-content-center">
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" height="30">
-                    <span class="ms-2">{{ config('app.name', 'Laravel') }}</span>
+                    <img src="{{ asset('images/jati-bahagya-logo.png') }}" alt="Logo" height="40">
+                    {{-- <span class="ms-2">{{ config('app.name', 'Laravel') }}</span> --}}
                 </a>
 
                 <!-- Tombol Toggler untuk Mobile -->

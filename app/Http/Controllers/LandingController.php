@@ -9,8 +9,26 @@ class LandingController extends Controller
 {
     public function index()
     {
+        // Ambil 3 kategori dengan jumlah produk terbanyak
+        $preview_categories = \App\Models\Category::withCount('products')
+            ->orderBy('products_count', 'desc')
+            ->limit(10)
+            ->get();
+
         // Ambil 10 produk secara acak untuk Flash Sale
-        $product_flash_sale = Product::inRandomOrder()->limit(10)->get();
+        $product_flash_sale = Product::with('variants')
+            ->where(function ($query) {
+                $query->where('discount', '>', 0)
+                    ->orWhereHas('variants', function ($query) {
+                        $query->where('discount', '>', 0);
+                    });
+            })
+            ->with(['variants' => function ($query) {
+                $query->orderByDesc('discount');
+            }])
+            ->orderByDesc('discount')
+            ->limit(10)
+            ->get();
 
         // Ambil 10 produk terbaik berdasarkan stok terbanyak (atau bisa pakai kriteria lain)
         $best_items = Product::where('status', 'active')
@@ -32,11 +50,22 @@ class LandingController extends Controller
                 ->get();
         }
 
+        // Ambil produk berdasarkan is_new_product true dengan limit 4 atau 8 tergantung jumlahnya
+        $new_products = Product::where('is_new_product', true)
+            ->when(Product::where('is_new_product', true)->count() > 8, function ($query) {
+                return $query->limit(8);
+            }, function ($query) {
+                return $query->limit(4);
+            })
+            ->get();
+
         return view('landing.index', compact(
             'product_flash_sale',
             'best_items',
             'top_categories',
-            'category_products'
+            'category_products',
+            'preview_categories',
+            'new_products'
         ));
     }
 

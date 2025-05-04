@@ -109,7 +109,7 @@
 
         @foreach ($top_categories as $category)
             <button class="btn btn-primary me-1 tab-btn" data-category="category_{{ $category->id }}">
-                10 {{ $category->name }} Terbaik
+                10 Produk {{ $category->name }} Terbaik
             </button>
         @endforeach
     </div>
@@ -130,17 +130,34 @@
                                 </a>
                             </h6>
                             <p class="card-text">
-                                <span class="fw-normal text-black d-flex mb-0">Rp
-                                    {{ number_format($product->price, 0, ',', '.') }}</span>
+                                @php
+                                    $variant = $product->variants->sortBy('final_price')->first();
+                                    $maxDiscount = $variant->discount ?? 0;
+                                    $discountedPrice = $variant->final_price ?? $product->final_price;
+                                @endphp
+
+                                @if ($maxDiscount > 0)
+                                    <span class="fw-bolder text-danger text-decoration-line-through">
+                                        Rp {{ number_format($variant->price ?? $product->price, 0, ',', '.') }}
+                                    </span>
+                                    <span class="fw-normal text-primary d-block">
+                                        Rp {{ number_format($discountedPrice, 0, ',', '.') }}
+                                    </span>
+                                @else
+                                    <span class="fw-normal text-primary d-block">
+                                        Rp {{ number_format($variant->price ?? $product->price, 0, ',', '.') }}
+                                    </span>
+                                @endif
+
                                 <small class="fw-light text-muted">
                                     <span class="text-warning bi bi-star-fill"></span>
                                     4.9 | 250 Ulasan
                                 </small>
                             </p>
                             <div class="d-flex justify-content-center align-items-center">
-                                <button type="button" class="btn btn-sm btn-primary">
-                                    Tambah ke Keranjang
-                                </button>
+                                <a href="{{ route('products.detail', $product->id) }}" class="btn btn-sm btn-primary">
+                                    Lihat Selengkapnya
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -163,8 +180,18 @@
                                     </a>
                                 </h6>
                                 <p class="card-text">
-                                    <span class="fw-normal text-black d-flex mb-0">Rp
-                                        {{ number_format($product->price, 0, ',', '.') }}</span>
+                                    @php
+                                        $variant = $product->variants->sortBy('final_price')->first();
+                                        $maxDiscount = $variant->discount ?? 0;
+                                        $discountedPrice = $variant->final_price ?? $product->final_price;
+                                    @endphp
+
+                                    <span class="fw-bolder text-danger text-decoration-line-through">
+                                        Rp {{ number_format($variant->price ?? $product->price, 0, ',', '.') }}
+                                    </span>
+                                    <span class="fw-normal text-primary d-block">
+                                        Rp {{ number_format($discountedPrice, 0, ',', '.') }}
+                                    </span>
                                     <small class="fw-light text-muted">
                                         <span class="text-warning bi bi-star-fill"></span>
                                         4.9 | 250 Ulasan
