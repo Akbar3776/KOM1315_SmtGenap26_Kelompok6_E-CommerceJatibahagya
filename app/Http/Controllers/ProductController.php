@@ -96,6 +96,7 @@ class ProductController extends Controller
                     'sku' => $variant->sku,
                     'price' => $variant->price,
                     'stock' => $variant->stock,
+                    'discount' => $variant->discount,
                     'image' => $variant->image,
                     'attributes' => $variant->attributeValues->pluck('id')->toArray()
                 ];
