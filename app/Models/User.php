@@ -23,6 +23,9 @@ class User extends Authenticatable
         'password',
         'phone',
         'role', // customer | admin
+        'otp',
+        'otp_expires_at',
+        'is_verified'
     ];
 
     /**
@@ -45,6 +48,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_verified' => 'boolean',
         ];
     }
 

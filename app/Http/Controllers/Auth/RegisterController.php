@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SendOTP;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -65,13 +70,40 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $otp = rand(100000, 999999);
+
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'phone' => $data['phone'],
             'address' => $data['address'] ?? null,
             'role' => 'customer',
+            'otp' => $otp,
+            'otp_expires_at' => Carbon::now()->addMinutes(30),
+            'is_verified' => false
         ]);
+
+        try {
+            Mail::to($user->email)->send(new SendOTP($otp));
+        } catch (\Exception $e) {
+            Log::error('OTP Email Error: ' . $e->getMessage());
+        }
+
+        return $user;
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        $this->guard()->logout();
+
+        $request->session()->regenerateToken();
+
+        $request->session()->put('email', $user->email);
+
+        return redirect()->route('verify')
+            ->with([
+                'status' => 'Kode OTP telah dikirim ke email Anda'
+            ]);
     }
 }

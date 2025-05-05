@@ -5,13 +5,18 @@ use App\Models\Regency;
 use App\Models\Village;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\VerificationController;
 
 Auth::routes();
+
+Route::get('/verify', [VerificationController::class, 'showVerificationForm'])->name('verify');
+Route::post('/verify', [VerificationController::class, 'verify'])->name('verify-post');
+Route::post('/resend-otp', [VerificationController::class, 'resendOtp'])->name('resend.otp');
 
 // ✅ Landing Page (Terbuka untuk semua)
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
 Route::get('/contact', [App\Http\Controllers\LandingController::class, 'contact'])->name('contact');
-Route::get('/chat', [App\Http\Controllers\LandingController::class, 'chat'])->name('chat'); 
+Route::get('/chat', [App\Http\Controllers\LandingController::class, 'chat'])->name('chat');
 
 
 // ✅ Produk
@@ -81,5 +86,4 @@ Route::middleware(['auth'])->group(function () {
             return Village::where('district_id', $district_id)->get();
         });
     });
-
 });
