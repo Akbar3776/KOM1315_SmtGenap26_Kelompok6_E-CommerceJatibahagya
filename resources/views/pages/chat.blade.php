@@ -6,28 +6,63 @@
             <i class="bi bi-arrow-left-circle"></i> Kembali
         </a>
 
-        <div class="row justify-content-center">
-            <div class="col-md-12">
+        <div class="row">
+            <!-- Sidebar: List Produk -->
+            <div class="col-md-3">
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Chat</h5>
+                    <div class="card-header bg-primary text-white fw-bold">
+                        Produk Chat
+                    </div>
+                    <div class="list-group list-group-flush">
+                        @foreach ($products as $product)
+                            <a href="#"
+                                class="list-group-item list-group-item-action d-flex align-items-center product-item"
+                                data-product-id="{{ $product->id }}">
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                    width="40" height="40" class="rounded me-2">
+                                <div class="text-truncate">
+                                    <strong>{{ $product->name }}</strong>
+                                    <div class="small text-muted">Klik untuk konsultasi</div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Chat -->
+            <div class="col-md-9">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light d-flex align-items-center">
+                        <img src="{{ asset('images/asisstant.png') }}" alt="Bahagya Assistant" width="40" height="40"
+                            class="rounded-circle me-2">
+                        <div>
+                            <h6 class="mb-0 fw-bold">Jati Bahagya Assistant</h6>
+                            <small class="text-muted">Online</small>
+                        </div>
                     </div>
                     <div class="card-body">
-
                         <div class="chat-container" id="chat-container">
+                            <!-- Greeting atau isi chat akan muncul di sini -->
                         </div>
 
                         <div class="mt-3">
-                            <form id="message-form">
+                            <form id="message-form" enctype="multipart/form-data">
                                 @csrf
                                 <div class="input-group">
+                                    <label for="chat-attachment" class="btn btn-outline-secondary">
+                                        <i class="bi bi-paperclip"></i>
+                                    </label>
+                                    <input type="file" id="chat-attachment" name="attachment" accept="image/*"
+                                        style="display: none;">
+
                                     <input type="text" class="form-control" placeholder="Ketik pesan Anda..."
                                         name="message" id="message-input" required>
+
                                     <button class="btn btn-primary" type="submit">Kirim</button>
                                 </div>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -90,6 +125,39 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+
+            const greeting =
+                "Halo, selamat datang di Jati Bahagya!<br>Saya Bahagya Assistant siap membantu Anda.<br><br>Dengan melanjutkan percakapan ini, Anda menyetujui proses pengumpulan dan pemrosesan data pribadi Anda yang berlaku sesuai dengan kebijakan privasi kami. Tujuan pengumpulan data ini adalah untuk bagaimana diatur dalam Kebijakan Privasi kami di sini: <br><br><a href='#'>Syarat & Ketentuan JatiBahagya</a>";
+            appendMessage(greeting, 'bot');
+
+            $("#chat-container").scrollTop($("#chat-container").prop("scrollHeight"));
+
+            // Tambahkan tombol balasan cepat
+            $("#chat-container").append(`
+                <div class="message py-1">
+                    <div class="container bot my-4">
+                        <button class="btn btn-sm btn-success me-2 quick-reply" data-reply="Ya, saya setuju.">✅ Ya, Setuju</button>
+                        <button class="btn btn-sm btn-outline-secondary quick-reply" data-reply="Tidak, terima kasih.">❌ Tidak, Terima Kasih</button>
+                    </div>
+                </div>
+            `);
+
+            $(document).on('click', '.quick-reply', function() {
+                const userReply = $(this).data('reply');
+                appendMessage(userReply, 'user');
+
+                // Hapus tombol setelah diklik
+                $(this).closest('.message-bubble').remove();
+
+                // Bot balas setelah pilih
+                setTimeout(function() {
+                    const botReply =
+                        "Terima kasih atas persetujuannya. Bagaimana saya bisa membantu Anda hari ini?";
+                    appendMessage(botReply, 'bot');
+                    $("#chat-container").scrollTop($("#chat-container").prop("scrollHeight"));
+                }, 500);
+            });
+
             $("#message-form").submit(function(event) {
                 event.preventDefault();
 

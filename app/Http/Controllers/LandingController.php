@@ -77,6 +77,8 @@ class LandingController extends Controller
 
     public function chat()
     {
-        return view('pages.chat');
+        $products = Product::latest()->take(10)->get();
+
+        return view('pages.chat', compact('products'));
     }
 }
