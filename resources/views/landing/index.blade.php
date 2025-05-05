@@ -466,6 +466,27 @@
 @endsection
 
 @section('scripts')
+    {{-- Toogle Fav --}}
+    <script>
+        function toggleFavorite(button) {
+            const icon = button.querySelector('i');
+
+            // Toggle warna dan ikon
+            if (button.classList.contains('btn-outline-secondary')) {
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-primary');
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                alert('Ditambahkan ke favorit!');
+            } else {
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-outline-secondary');
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+            }
+        }
+    </script>
+
     {{-- Swiper Flash Sale --}}
     <script>
         var swiper = new Swiper(".mySwiper", {

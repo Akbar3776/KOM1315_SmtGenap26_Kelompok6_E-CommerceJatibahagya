@@ -19,12 +19,30 @@
                 <div class="card shadow-sm position-relative overflow-hidden">
                     <!-- Seluruh card akan terkena efek hover -->
                     <div class="product-image position-relative">
-                        <span class="new-tag fw-bold"
-                            style="position: absolute; top: 10px; left: 10px; background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.75rem; z-index: 3; border-radius: 0.25rem;">
-                            BARU
-                        </span>
-                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top"
-                            alt="{{ $product->name }}" />
+                        @php
+                            $variant = $product->variants->sortBy('final_price')->first();
+                            $maxDiscount = $variant->discount ?? 0;
+                            $discountedPrice = $variant->final_price ?? $product->final_price;
+                        @endphp
+                        <div class="product-image">
+                            @if ($maxDiscount > 0)
+                                {{-- <span class="discount-tag">{{ $maxDiscount }}%</span> --}}
+                            @endif
+
+                            <span class="new-tag fw-bold"
+                                style="position: absolute; top: 10px; left: 10px; background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.75rem; z-index: 3; border-radius: 0.25rem;">
+                                BARU
+                            </span>
+
+                            <!-- Love icon button -->
+                            <button type="button" class="btn btn-sm btn-outline-secondary favorite-btn"
+                                onclick="toggleFavorite(this)">
+                                <i class="bi bi-heart"></i>
+                            </button>
+
+                            <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top"
+                                alt="{{ $product->name }}" />
+                        </div>
                     </div>
 
                     <!-- Overlay saat hover di seluruh card -->

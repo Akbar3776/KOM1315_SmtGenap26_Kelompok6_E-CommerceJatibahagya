@@ -19,21 +19,27 @@
         <!-- Swiper -->
         <div class="swiper mySwiper">
             <div class="swiper-wrapper">
-                @for ($i = 0; $i < 10; $i++)
+                @for ($i = 0; $i < 1; $i++)
                     @foreach ($product_flash_sale as $product)
-                        @php
-                            $variant = $product->variants->sortBy('final_price')->first();
-                            $maxDiscount = $variant->discount ?? 0;
-                            $discountedPrice = $variant->final_price ?? $product->final_price;
-                        @endphp
-
                         <div class="swiper-slide h-100">
                             <div class="card shadow-sm h-100 d-flex flex-column">
                                 <a href="{{ route('products.detail', $product->id) }}">
+                                    @php
+                                        $variant = $product->variants->sortBy('final_price')->first();
+                                        $maxDiscount = $variant->discount ?? 0;
+                                        $discountedPrice = $variant->final_price ?? $product->final_price;
+                                    @endphp
                                     <div class="product-image">
                                         @if ($maxDiscount > 0)
                                             <span class="discount-tag">{{ $maxDiscount }}%</span>
                                         @endif
+
+                                        <!-- Love icon button -->
+                                        <button type="button" class="btn btn-sm btn-outline-secondary favorite-btn"
+                                            onclick="toggleFavorite(this)">
+                                            <i class="bi bi-heart"></i>
+                                        </button>
+
                                         <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top"
                                             alt="{{ $product->name }}" />
                                     </div>

@@ -121,8 +121,25 @@
             @foreach ($best_items as $product)
                 <div class="col-12 col-md-3 mb-2">
                     <div class="card shadow-sm">
-                        <img src="{{ asset('storage/' . ($product->image ?? 'images/default.png')) }}"
-                            class="bd-placeholder-img card-img-top" alt="{{ $product->name }}" />
+                        @php
+                            $variant = $product->variants->sortBy('final_price')->first();
+                            $maxDiscount = $variant->discount ?? 0;
+                            $discountedPrice = $variant->final_price ?? $product->final_price;
+                        @endphp
+                        <div class="product-image">
+                            @if ($maxDiscount > 0)
+                                <span class="discount-tag">{{ $maxDiscount }}%</span>
+                            @endif
+
+                            <!-- Love icon button -->
+                            <button type="button" class="btn btn-sm btn-outline-secondary favorite-btn"
+                                onclick="toggleFavorite(this)">
+                                <i class="bi bi-heart"></i>
+                            </button>
+
+                            <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top"
+                                alt="{{ $product->name }}" />
+                        </div>
                         <div class="card-body">
                             <h6 class="card-title product-title mb-2">
                                 <a href="{{ route('products.detail', $product->id) }}">

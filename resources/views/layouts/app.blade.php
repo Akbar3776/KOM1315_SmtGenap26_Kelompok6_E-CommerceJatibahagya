@@ -100,6 +100,14 @@
             /* Pastikan tag di atas gambar */
         }
 
+
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
         .new-tag {
             position: absolute;
             top: 10px;
@@ -293,12 +301,16 @@
                     <div class="col-lg-3 col-md-6 text-lg-center">
                         <h5 class="mt-1">Ikuti Kami</h5>
                         <ul class="list-inline">
-                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-facebook"></i></a></li>
-                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-twitter"></i></a></li>
-                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-instagram"></i></a></li>
-                            <li class="list-inline-item"><a href="#" class="text-muted"><i class="bi bi-youtube"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i
+                                        class="bi bi-facebook"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i
+                                        class="bi bi-twitter"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i
+                                        class="bi bi-instagram"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted"><i
+                                        class="bi bi-youtube"></i></a></li>
                         </ul>
-                    </div>                    
+                    </div>
                     <div class="col-lg-3 col-md-6">
                         <h5 class="mt-1">Cek Aplikasi</h5>
                         <ul class="list-unstyled">
