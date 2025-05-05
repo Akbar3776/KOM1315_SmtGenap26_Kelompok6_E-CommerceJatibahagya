@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="container mt-4">
-        <h4 class="mb-2">Produk</h4>
+        <h3 class="mb-3">Produk <span class="text-primary">Jati</span>Bahagya</h3>
 
         {{-- Form Filter dan Sorting --}}
         <form action="{{ route('products.all') }}" method="GET" class="mb-4">
@@ -118,8 +118,25 @@
                     <div class="card shadow-sm h-100">
                         {{-- Tambahkan link ke halaman detail produk --}}
                         <a href="{{ route('products.detail', $product->id) }}">
-                            <img src="{{ asset('storage/' . $product->image) }}" class="bd-placeholder-img card-img-top"
-                                alt="{{ $product->name }}" />
+                            @php
+                                $variant = $product->variants->sortBy('final_price')->first();
+                                $maxDiscount = $variant->discount ?? 0;
+                                $discountedPrice = $variant->final_price ?? $product->final_price;
+                            @endphp
+                            <div class="product-image">
+                                @if ($maxDiscount > 0)
+                                    <span class="discount-tag">{{ $maxDiscount }}%</span>
+                                @endif
+
+                                <!-- Love icon button -->
+                                <button type="button" class="btn btn-sm btn-outline-secondary favorite-btn"
+                                    onclick="toggleFavorite(this)">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+
+                                <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top"
+                                    alt="{{ $product->name }}" />
+                            </div>
                         </a>
                         <div class="card-body d-flex flex-column">
                             <h6 class="card-title mb-1" style="">
