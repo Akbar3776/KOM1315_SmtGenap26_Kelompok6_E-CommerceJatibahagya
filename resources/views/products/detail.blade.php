@@ -240,6 +240,21 @@
                             tabindex="0">
                             <div class="mt-2">
                                 <div class="mb-4">
+                                    <ul>
+                                        <li>Untuk pertanyaan mengenai
+                                            pengiriman/pembayaran/pembatalan/penukaran/pengembalian, bukan mengenai produk,
+                                            silakan gunakan Pusat Pelanggan > Pertanyaan 1:1 > Hubungi Kami.
+                                        </li>
+                                        <li>
+                                            Jika Anda mengunggahkan konten yang tidak pantas seperti fitnah, bahasa kasar,
+                                            atau pencemaran nama baik, ID Anda dapat dibatasi dan kiriman Anda dapat
+                                            dihapus.</li>
+                                        <li> Karena ada risiko informasi pribadi bocor ke ruang di mana orang lain selain
+                                            pengguna dapat melihatnya, kiriman yang berisi informasi pribadi dapat dihapus
+                                            tanpa pemberitahuan karena perlindungan privasi.</li>
+                                    </ul>
+                                </div>
+                                <div class="mb-4">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <span class="text-muted">A*** S*******</span>
