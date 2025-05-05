@@ -4,18 +4,14 @@
         <div class="carousel-item active" style="background-image: url('{{ asset('images/carousell-1.png') }}')">
             <div class="carousel-caption d-none d-md-block">
                 <h1 class="text-white">STUDENT ROOM</h1>
-                <!-- Teks dengan warna primary -->
-                <a href="#" class="btn btn-primary mt-3">Selengkapnya</a>
-                <!-- Tombol primary -->
+                <a href="{{ route('products.all') }}" class="btn btn-primary mt-3">Selengkapnya</a>
             </div>
         </div>
         <!-- Slide 2 -->
         <div class="carousel-item" style="background-image: url('{{ asset('images/carousell-2.png') }}')">
             <div class="carousel-caption d-none d-md-block">
                 <h1 class="text-white">KITCHEN ROOM</h1>
-                <!-- Teks dengan warna primary -->
-                <a href="#" class="btn btn-primary mt-3">Selengkapnya</a>
-                <!-- Tombol primary -->
+                <a href="{{ route('products.all') }}" class="btn btn-primary mt-3">Selengkapnya</a>
             </div>
         </div>
     </div>
