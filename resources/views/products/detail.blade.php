@@ -1,5 +1,37 @@
 @extends('layouts.app')
 
+@section('styles')
+    <style>
+        /* Di file CSS Anda */
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .rating-input input[type="radio"] {
+            display: none;
+        }
+
+        .rating-input label {
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .rating-input input[type="radio"]:checked~label,
+        .rating-input input[type="radio"]:hover~label {
+            color: #ffc107;
+        }
+
+        .rating-input label:hover,
+        .rating-input label:hover~label {
+            color: #ffc107;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div class="container mt-4">
 
@@ -23,13 +55,28 @@
                     <h3 class="py-0 my-2">{{ $product->name }}</h3>
                     <div class="d-flex align-items-center py-0 my-0">
                         <div class="text-primary">
-                            <span class="bi bi-star-fill"></span>
-                            <span class="bi bi-star-fill"></span>
-                            <span class="bi bi-star-fill"></span>
-                            <span class="bi bi-star-half"></span>
-                            <span class="bi bi-star"></span>
+                            <div class="star-rating">
+                                @php
+                                    $rating = $product->average_rating;
+                                    $fullStars = floor($rating);
+                                    $hasHalfStar = $rating - $fullStars >= 0.5;
+                                @endphp
+
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= $fullStars)
+                                        <span class="bi bi-star-fill"></span>
+                                    @elseif($i == $fullStars + 1 && $hasHalfStar)
+                                        <span class="bi bi-star-half"></span>
+                                    @else
+                                        <span class="bi bi-star"></span>
+                                    @endif
+                                @endfor
+                            </div>
                         </div>
-                        <small class="ms-2 fw-bolder text-primary">(4.6 dari 5, 250 Ulasan)</small>
+                        <small class="ms-2 fw-bolder text-primary">
+                            ({{ number_format($product->average_rating, 1) }} dari 5,
+                            {{ $product->reviews()->approved()->count() }} Ulasan)
+                        </small>
                     </div>
                     <hr />
                 </div>
@@ -178,7 +225,10 @@
                                         aria-controls="nav-detail" aria-selected="true">Detail Produk</button>
                                     <button class="nav-link" id="nav-review-tab" data-bs-toggle="tab"
                                         data-bs-target="#nav-review" type="button" role="tab"
-                                        aria-controls="nav-review" aria-selected="false">Ulasan (1)</button>
+                                        aria-controls="nav-review" aria-selected="false">
+                                        Ulasan (<span
+                                            class="review-count">{{ $product->reviews()->approved()->count() }}</span>)
+                                    </button>
                                     <button class="nav-link" id="nav-question-tab" data-bs-toggle="tab"
                                         data-bs-target="#nav-question" type="button" role="tab"
                                         aria-controls="nav-question" aria-selected="false">Tanya Jawab (2)</button>
@@ -196,44 +246,118 @@
                         </div>
                         <div class="tab-pane fade" id="nav-review" role="tabpanel" aria-labelledby="nav-review-tab"
                             tabindex="0">
-                            <div class="mt-2">
-                                {{-- Dummy Review --}}
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <div class="d-flex">
-                                            {{-- Avatar kiri --}}
-                                            <img src="https://www.gravatar.com/avatar/1234567890abcdef" alt="user-avatar"
-                                                class="rounded-circle" width="100" height="100">
+                            <!-- Form Review -->
+                            <!-- Modal -->
+                            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="reviewModalLabel">Beri Ulasan Produk</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="reviewForm" action="{{ route('reviews.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                                            {{-- Konten kanan --}}
-                                            <div class="ms-3 flex-grow-1">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    {{-- Rating bintang --}}
-                                                    <div class="text-warning">
-                                                        <span class="bi bi-star-fill"></span>
-                                                        <span class="bi bi-star-fill"></span>
-                                                        <span class="bi bi-star-fill"></span>
-                                                        <span class="bi bi-star-half"></span>
-                                                        <span class="bi bi-star"></span>
+                                                <!-- Rating -->
+                                                <div class="mb-4">
+                                                    <label class="form-label fs-5">Bagaimana penilaian Anda?</label>
+                                                    <div class="rating-input text-center">
+                                                        @for ($i = 5; $i >= 1; $i--)
+                                                            <input type="radio" id="modalStar{{ $i }}"
+                                                                name="rating" value="{{ $i }}" required>
+                                                            <label for="modalStar{{ $i }}"
+                                                                class="bi bi-star-fill fs-1"></label>
+                                                        @endfor
                                                     </div>
-
-                                                    {{-- Author & tanggal --}}
-                                                    <small class="text-muted">Oleh <strong>J*** D**</strong> — 10 Januari
-                                                        2025</small>
+                                                    @error('rating')
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
 
-                                                {{-- Judul review --}}
-                                                <h6 class="mb-1 mt-2">Judul Ulasan</h6>
+                                                <!-- Judul -->
+                                                <div class="mb-3">
+                                                    <label for="modalReviewTitle" class="form-label">Judul Ulasan</label>
+                                                    <input type="text"
+                                                        class="form-control @error('title') is-invalid @enderror"
+                                                        id="modalReviewTitle" name="title" required maxlength="100"
+                                                        placeholder="Contoh: Sangat memuaskan">
+                                                    @error('title')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
 
-                                                {{-- Isi review --}}
-                                                <p class="mb-1">
-                                                    Produk sangat bagus! Sesuai dengan deskripsi, kualitas oke dan harga
-                                                    terjangkau. Sangat puas!
-                                                </p>
-                                            </div>
+                                                <!-- Komentar -->
+                                                <div class="mb-3">
+                                                    <label for="modalReviewComment" class="form-label">Ulasan Anda</label>
+                                                    <textarea class="form-control @error('comment') is-invalid @enderror" id="modalReviewComment" name="comment"
+                                                        rows="5" required placeholder="Bagikan pengalaman Anda menggunakan produk ini"></textarea>
+                                                    @error('comment')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary"
+                                                        data-bs-dismiss="modal">Tutup</button>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <span class="spinner-border spinner-border-sm d-none"
+                                                            role="status"></span>
+                                                        Kirim Ulasan
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary my-4" data-bs-toggle="modal"
+                                data-bs-target="#reviewModal">
+                                <i class="bi bi-pencil-square"></i> Tulis Ulasan
+                            </button>
+
+                            <!-- Daftar Review -->
+                            <div class="reviews-list">
+                                @foreach ($product->reviews->where('is_approved', true) as $review)
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <img src="{{ $review->user->avatar ?? 'https://www.gravatar.com/avatar/' . md5($review->user->email) }}"
+                                                    alt="user-avatar" class="rounded-circle me-3" width="60"
+                                                    height="60">
+
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <!-- Rating -->
+                                                        <div class="text-warning">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= $review->rating)
+                                                                    <i class="bi bi-star-fill"></i>
+                                                                @else
+                                                                    <i class="bi bi-star"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+
+                                                        <!-- Info Reviewer -->
+                                                        <small class="text-muted">
+                                                            Oleh {{ $review->user->name }} —
+                                                            {{ $review->created_at->format('d M Y') }}
+                                                        </small>
+                                                    </div>
+
+                                                    <h6 class="my-2">{{ $review->title }}</h6>
+                                                    <p class="mb-0">{{ $review->comment }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-question" role="tabpanel" aria-labelledby="nav-question-tab"
@@ -275,7 +399,7 @@
             </div>
         </div>
 
-        {{-- Review Section --}}
+        {{-- Toast Section --}}
         <div class="mt-5">
             <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
                 <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
@@ -288,6 +412,54 @@
                     </div>
                 </div>
             </div>
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+                {{-- SESSION SUCCESS --}}
+                @if (session('status'))
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header bg-success text-white">
+                            <strong class="me-auto">Sukses</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            {{ session('status') }}
+                        </div>
+                    </div>
+                @endif
+
+                {{-- SESSION ERROR --}}
+                @if (session('error'))
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header bg-danger text-white">
+                            <strong class="me-auto">Gagal</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            {{ session('error') }}
+                        </div>
+                    </div>
+                @endif
+
+                {{-- VALIDATION ERRORS --}}
+                @if ($errors->any())
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header bg-warning text-dark">
+                            <strong class="me-auto">Validasi</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            <ul class="mb-0 ps-3">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
         </div>
     </div>
 @endsection

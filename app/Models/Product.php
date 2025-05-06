@@ -71,4 +71,30 @@ class Product extends Model
     {
         return $this->hasMany(Attribute::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Hitung rata-rata rating
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->approved()->avg('rating');
+    }
+
+    // Format rating
+    public function getAverageRatingStarsAttribute()
+    {
+        $avg = $this->average_rating;
+        $fullStars = floor($avg);
+        $halfStar = ($avg - $fullStars) >= 0.5 ? 1 : 0;
+        $emptyStars = 5 - $fullStars - $halfStar;
+
+        return [
+            'full' => $fullStars,
+            'half' => $halfStar,
+            'empty' => $emptyStars
+        ];
+    }
 }

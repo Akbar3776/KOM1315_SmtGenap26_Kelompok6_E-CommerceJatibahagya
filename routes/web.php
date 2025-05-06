@@ -62,6 +62,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/password/update', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
     });
 
+    // ✅ Post Review
+    Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+
     // ✅ Alamat Pengiriman
     Route::prefix('address')->name('address.')->group(function () {
         Route::get('/', [App\Http\Controllers\UserAddressController::class, 'index'])->name('index');
