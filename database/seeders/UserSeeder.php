@@ -22,9 +22,9 @@ class UserSeeder extends Seeder
     {
         // Buat 3 Admin dengan role yang berbeda
         $admins = [
-            ['name' => 'Rizky Pratama', 'email' => 'rizky@wavemoon.com', 'role' => 'admin', 'admin_role' => 'super_admin'],
-            ['name' => 'Dewi Anjani', 'email' => 'dewi@wavemoon.com', 'role' => 'admin', 'admin_role' => 'staff'],
-            ['name' => 'Bayu Setiawan', 'email' => 'bayu@wavemoon.com', 'role' => 'admin', 'admin_role' => 'customer_support'],
+            ['name' => 'Admin', 'email' => 'admin@jatibahagya.com', 'role' => 'admin', 'admin_role' => 'super_admin'],
+            ['name' => 'Staff Warehouse', 'email' => 'wh@jatibahagya.com', 'role' => 'admin', 'admin_role' => 'staff'],
+            ['name' => 'CS Jati Bahagya', 'email' => 'cs@jatibahagya.com', 'role' => 'admin', 'admin_role' => 'customer_support'],
         ];
 
         foreach ($admins as $admin) {
@@ -34,6 +34,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'phone' => '0812' . rand(10000000, 99999999),
                 'role' => $admin['role'],
+                'is_verified' => true,
             ]);
 
             Admin::create([
@@ -46,8 +47,9 @@ class UserSeeder extends Seeder
 
         // Buat 2 Customer
         $customers = [
-            ['name' => 'Siti Nurhaliza', 'email' => 'siti@wavemoon.com'],
-            ['name' => 'Andi Saputra', 'email' => 'andi@wavemoon.com'],
+            ['name' => 'Siti Nurhaliza', 'email' => 'siti@gmail.com'],
+            ['name' => 'Andi Saputra', 'email' => 'andi@gmail.com'],
+            ['name' => 'Joko Saputro', 'email' => 'joko@gmail.com'],
         ];
 
         foreach ($customers as $customer) {
@@ -57,6 +59,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'phone' => '0813' . rand(10000000, 99999999),
                 'role' => 'customer',
+                'is_verified' => true,
             ]);
 
             $this->generateAddress($user);
