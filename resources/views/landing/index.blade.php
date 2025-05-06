@@ -367,10 +367,6 @@
                             cepat.
                         </p>
                     </div>
-                    <!-- Tombol di bagian bawah -->
-                    <div class="mt-auto">
-                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
-                    </div>
                 </div>
 
                 <!-- Perakitan -->
@@ -384,10 +380,6 @@
                             Jangan repot merakit sendiri. Kami menyediakan layanan perakitan agar furniture Anda siap
                             digunakan.
                         </p>
-                    </div>
-                    <!-- Tombol di bagian bawah -->
-                    <div class="mt-auto">
-                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
                     </div>
                 </div>
 
@@ -403,10 +395,6 @@
                             efisien.
                         </p>
                     </div>
-                    <!-- Tombol di bagian bawah -->
-                    <div class="mt-auto">
-                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
-                    </div>
                 </div>
 
                 <!-- Desain Interior -->
@@ -419,10 +407,6 @@
                         <p>
                             Wujudkan harmoni ruang impian Anda bersama kami. Konsultasikan desain terbaik untuk hunian Anda.
                         </p>
-                    </div>
-                    <!-- Tombol di bagian bawah -->
-                    <div class="mt-auto">
-                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
                     </div>
                 </div>
 
@@ -437,10 +421,6 @@
                             Nikmati kemudahan transaksi dengan berbagai metode pembayaran yang aman dan nyaman untuk Anda.
                         </p>
                     </div>
-                    <!-- Tombol di bagian bawah -->
-                    <div class="mt-auto">
-                        <a href="#" class="btn btn-sm btn-primary w-100">Selengkapnya</a>
-                    </div>
                 </div>
 
                 <!-- Pusat Bantuan -->
@@ -454,12 +434,11 @@
                             Temukan jawaban atas pertanyaan Anda atau hubungi kami untuk bantuan lebih lanjut.
                         </p>
                     </div>
-                    <!-- Tombol di bagian bawah -->
-                    <div class="mt-auto">
-                        <a href="#" class="btn btn-sm btn-primary w-100">Hubungi Kami</a>
-                    </div>
                 </div>
 
+            </div>
+            <div class="my-3 d-flex justify-content-center">
+                <a href="{{ route('chat') }}" class="btn btn-sm btn-primary px-4 py-1 rounded-4">Selengkapnya</a>
             </div>
         </div>
     </section>

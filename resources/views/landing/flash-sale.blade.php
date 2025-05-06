@@ -13,10 +13,10 @@
                 <h1 class="text-white fw-bolder mx-2" data-aos="fade-up" data-aos-duration="1000">Flash Sale</h1>
                 <div id="flash-sale-timer" class="text-white fw-bold me-3"></div>
             </div>
-            <a href="{{ route('products.all', ['is_discount' => 1]) }}" 
+            <a href="{{ route('products.all', ['is_discount' => 1]) }}"
                 class="btn btn-secondary rounded-4 {{ request('is_discount') ? 'active' : '' }}">
                 <i class="bi bi-tag-fill me-1"></i> Lihat Semua
-             </a>
+            </a>
         </div>
 
         <!-- Swiper -->
@@ -68,7 +68,10 @@
                                             </span>
                                         @endif
                                         <small class="fw-light text-muted d-block">
-                                            <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
+                                            <span class="text-warning bi bi-star-fill"></span>
+                                            ({{ number_format($product->average_rating, 1) }})
+                                            |
+                                            {{ $product->reviews()->approved()->count() }} Ulasan
                                         </small>
                                     </p>
                                     <div class="d-flex justify-content-center mt-auto">

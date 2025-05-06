@@ -81,7 +81,9 @@
 
                             <small class="fw-light text-muted-flex">
                                 <span class="text-warning bi bi-star-fill"></span>
-                                4.9 | 250 Ulasan
+                                ({{ number_format($product->average_rating, 1) }})
+                                |
+                                {{ $product->reviews()->approved()->count() }} Ulasan
                             </small>
                         </p>
                         <div class="d-flex justify-content-center align-items-center">
