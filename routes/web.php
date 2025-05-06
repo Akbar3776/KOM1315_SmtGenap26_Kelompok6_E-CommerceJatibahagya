@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('product.questions.store');
 
     // ✅ Wishlist
+    Route::get('/wishlist', [App\Http\Controllers\ProductController::class, 'getWishlist'])->name('products.wishlist');
     Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::get('/wishlist/check/{productId}', [App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');
 

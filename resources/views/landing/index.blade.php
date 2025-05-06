@@ -5,7 +5,7 @@
     <section class="container d-none d-md-block">
         <div class="row">
             <div class="col-md-2 text-center px-3 py-3">
-                <a href="#" class="nav-link">
+                <a href="{{ route('products.wishlist') }}" class="nav-link">
                     <i class="bi bi-heart fs-4 text-primary"></i><br>
                     <span class="d-none">Favorit</span>
                 </a>
