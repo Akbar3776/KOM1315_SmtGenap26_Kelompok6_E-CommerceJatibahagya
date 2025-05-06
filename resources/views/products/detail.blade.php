@@ -42,7 +42,10 @@
 
         <div class="row">
             <div class="col-md-6">
-                <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid rounded-4" alt="{{ $product->name }}">
+                <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid rounded-4 mb-4" alt="{{ $product->name }}">
+                <img class="img-fluid w-80 rounded-2 mb-3" height="80%" src="{{ asset('images/frame-26.png') }}" alt="Promosi" />
+                <img class="img-fluid w-80 rounded-2 mb-3" height="80%" src="{{ asset('images/frame-25.png') }}" alt="Promosi" />
+                <img class="img-fluid w-80 rounded-2 mb-3" height="80%" src="{{ asset('images/frame-24.png') }}" alt="Promosi" />
             </div>
             <div class="col-md-6">
 

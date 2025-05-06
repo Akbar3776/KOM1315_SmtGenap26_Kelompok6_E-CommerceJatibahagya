@@ -268,6 +268,7 @@ class ProductSeeder extends Seeder
                 'category_id' => $category->id,
                 'brand_id' => $brand->id,
                 'image' => $productImagePath,
+                'is_new_product' => true,
             ]);
 
             $attributeValueMap = [];

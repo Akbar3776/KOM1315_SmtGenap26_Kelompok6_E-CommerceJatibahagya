@@ -90,7 +90,7 @@
 
     {{-- SECTION: Poster II --}}
     <section class="my-3" data-aos="fade-up" data-aos-duration="1000">
-        <img class="img-fluid w-100" style="height: 80%;" src="{{ asset('images/promo2.png') }}" alt="Promosi" />
+        <img class="img-fluid w-100" style="height: 80%;" src="{{ asset('images/new-members.png') }}" alt="Promosi" />
     </section>
 
     {{-- SECTION: New Product --}}
