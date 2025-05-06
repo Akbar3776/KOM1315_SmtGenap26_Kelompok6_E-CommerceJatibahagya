@@ -27,10 +27,11 @@ class ProductController extends Controller
         $brandId = $request->input('brand');
         $sortBy = $request->input('sort_by');
         $search = $request->input('search');
+        $isDiscount = $request->boolean('is_discount'); // Menggunakan boolean() untuk konversi otomatis
 
         // Query produk berdasarkan filter
         $query = Product::query()
-            ->with(['attributes.values', 'variants.attributeValues']);;
+            ->with(['attributes.values', 'variants.attributeValues']);
 
         // Filter berdasarkan kategori
         if ($categoryId) {
@@ -45,6 +46,18 @@ class ProductController extends Controller
         // Filter berdasarkan keyword
         if ($search) {
             $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Filter produk diskon
+        if ($isDiscount) {
+            $query->where(function ($q) {
+                // Produk dengan diskon langsung
+                $q->where('discount', '>', 0)
+                    // Atau produk yang memiliki varian dengan diskon
+                    ->orWhereHas('variants', function ($variantQuery) {
+                        $variantQuery->where('discount', '>', 0);
+                    });
+            });
         }
 
         // Sorting produk
