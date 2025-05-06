@@ -463,27 +463,101 @@
             </div>
         </div>
     </section>
+
+    {{-- Toast --}}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto text-white">Sukses</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Produk berhasil ditambahkan ke keranjang!
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
     {{-- Toogle Fav --}}
     <script>
+        // Fungsi untuk toggle favorite
         function toggleFavorite(button) {
-            const icon = button.querySelector('i');
-
-            // Toggle warna dan ikon
-            if (button.classList.contains('btn-outline-secondary')) {
-                button.classList.remove('btn-outline-secondary');
-                button.classList.add('btn-primary');
-                icon.classList.remove('bi-heart');
-                icon.classList.add('bi-heart-fill');
-                alert('Ditambahkan ke favorit!');
-            } else {
-                button.classList.remove('btn-primary');
-                button.classList.add('btn-outline-secondary');
-                icon.classList.remove('bi-heart-fill');
-                icon.classList.add('bi-heart');
+            if (!{{ auth()->check() ? 'true' : 'false' }}) {
+                window.location.href = "{{ route('login') }}";
+                return;
             }
+
+            const productId = button.getAttribute('data-product-id');
+            const icon = button.querySelector('i');
+            const isActive = icon.classList.contains('bi-heart-fill');
+
+            fetch("{{ route('wishlist.toggle') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        product_id: productId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'added') {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill', 'text-danger');
+                        showToast(data.message);
+                    } else if (data.status === 'removed') {
+                        icon.classList.remove('bi-heart-fill', 'text-danger');
+                        icon.classList.add('bi-heart');
+                        showToast(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Terjadi kesalahan', true);
+                });
+        }
+
+        // Fungsi untuk mengecek status wishlist saat load halaman
+        document.addEventListener('DOMContentLoaded', function() {
+            const favoriteButtons = document.querySelectorAll('.favorite-btn');
+
+            favoriteButtons.forEach(button => {
+                const productId = button.getAttribute('data-product-id');
+
+                if ({{ Auth::check() ? 'true' : 'false' }}) {
+                    fetch(`/wishlist/check/${productId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const icon = button.querySelector('i');
+                            if (data.in_wishlist) {
+                                icon.classList.remove('bi-heart');
+                                icon.classList.add('bi-heart-fill', 'text-danger');
+                            } else {
+                                icon.classList.remove('bi-heart-fill', 'text-danger');
+                                icon.classList.add('bi-heart');
+                            }
+                        });
+                }
+            });
+        });
+
+        function showToast(message, isError = false) {
+            var toast = $("#liveToast"); // Make sure you have a toast element with this ID in your HTML
+            toast.find(".toast-body").text(message);
+
+            if (isError) {
+                toast.find(".toast-header strong").text("Error");
+                toast.find(".toast-header").addClass("bg-danger text-white");
+            } else {
+                toast.find(".toast-header strong").text("Sukses");
+                toast.find(".toast-header").removeClass("bg-danger text-white");
+            }
+
+            var bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
         }
     </script>
 

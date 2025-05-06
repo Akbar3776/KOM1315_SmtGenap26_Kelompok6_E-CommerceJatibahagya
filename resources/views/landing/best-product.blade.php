@@ -133,8 +133,9 @@
 
                             <!-- Love icon button -->
                             <button type="button" class="btn btn-sm btn-outline-secondary favorite-btn"
-                                onclick="toggleFavorite(this)">
-                                <i class="bi bi-heart"></i>
+                                data-product-id="{{ $product->id }}" onclick="toggleFavorite(this)">
+                                <i
+                                    class="bi bi-heart{{ Auth::check() && $product->isInWishlist() ? '-fill text-danger' : '' }}"></i>
                             </button>
 
                             <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top"

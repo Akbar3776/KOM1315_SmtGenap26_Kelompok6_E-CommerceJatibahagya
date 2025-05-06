@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int $id
@@ -101,5 +102,18 @@ class Product extends Model
     public function questions()
     {
         return $this->hasMany(ProductQuestion::class);
+    }
+    public function isInWishlist()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return $this->wishlists()->where('user_id', Auth::id())->exists();
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 }

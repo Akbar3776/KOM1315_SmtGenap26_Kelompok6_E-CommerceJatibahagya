@@ -117,7 +117,7 @@
                 <div class="col-12 col-md-3 mb-3" data-aos="fade-left" data-aos-duration="1000">
                     <div class="card shadow-sm h-100">
                         {{-- Tambahkan link ke halaman detail produk --}}
-                        <a href="{{ route('products.detail', $product->id) }}">
+                        <div>
                             @php
                                 $variant = $product->variants->sortBy('final_price')->first();
                                 $maxDiscount = $variant->discount ?? 0;
@@ -130,14 +130,15 @@
 
                                 <!-- Love icon button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary favorite-btn"
-                                    onclick="toggleFavorite(this)">
-                                    <i class="bi bi-heart"></i>
+                                    data-product-id="{{ $product->id }}" onclick="toggleFavorite(this)">
+                                    <i
+                                        class="bi bi-heart{{ Auth::check() && $product->isInWishlist() ? '-fill text-danger' : '' }}"></i>
                                 </button>
 
                                 <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top"
                                     alt="{{ $product->name }}" />
                             </div>
-                        </a>
+                        </div>
                         <div class="card-body d-flex flex-column">
                             <h6 class="card-title mb-1" style="">
                                 <a href="{{ route('products.detail', $product->id) }}">
@@ -181,7 +182,10 @@
                                 @endif
                             </div>
                             <small class="fw-light text-muted d-block">
-                                <span class="text-warning bi bi-star-fill"></span> 4.9 | 250 Ulasan
+                                <span class="text-warning bi bi-star-fill"></span>
+                                ({{ number_format($product->average_rating, 1) }})
+                                |
+                                {{ $product->reviews()->approved()->count() }} Ulasan
                             </small>
                             </p>
                             <div class="mt-auto">
@@ -223,6 +227,87 @@
 @endsection
 
 @section('scripts')
+    <script>
+        // Fungsi untuk toggle favorite
+        function toggleFavorite(button) {
+            if (!{{ auth()->check() ? 'true' : 'false' }}) {
+                window.location.href = "{{ route('login') }}";
+                return;
+            }
+
+            const productId = button.getAttribute('data-product-id');
+            const icon = button.querySelector('i');
+            const isActive = icon.classList.contains('bi-heart-fill');
+
+            fetch("{{ route('wishlist.toggle') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        product_id: productId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'added') {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill', 'text-danger');
+                        showToast(data.message);
+                    } else if (data.status === 'removed') {
+                        icon.classList.remove('bi-heart-fill', 'text-danger');
+                        icon.classList.add('bi-heart');
+                        showToast(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Terjadi kesalahan', true);
+                });
+        }
+
+        // Fungsi untuk mengecek status wishlist saat load halaman
+        document.addEventListener('DOMContentLoaded', function() {
+            const favoriteButtons = document.querySelectorAll('.favorite-btn');
+
+            favoriteButtons.forEach(button => {
+                const productId = button.getAttribute('data-product-id');
+
+                if ({{ Auth::check() ? 'true' : 'false' }}) {
+                    fetch(`/wishlist/check/${productId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const icon = button.querySelector('i');
+                            if (data.in_wishlist) {
+                                icon.classList.remove('bi-heart');
+                                icon.classList.add('bi-heart-fill', 'text-danger');
+                            } else {
+                                icon.classList.remove('bi-heart-fill', 'text-danger');
+                                icon.classList.add('bi-heart');
+                            }
+                        });
+                }
+            });
+        });
+
+        function showToast(message, isError = false) {
+            var toast = $("#liveToast"); // Make sure you have a toast element with this ID in your HTML
+            toast.find(".toast-body").text(message);
+
+            if (isError) {
+                toast.find(".toast-header strong").text("Error");
+                toast.find(".toast-header").addClass("bg-danger text-white");
+            } else {
+                toast.find(".toast-header strong").text("Sukses");
+                toast.find(".toast-header").removeClass("bg-danger text-white");
+            }
+
+            var bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+    </script>
+
     <script>
         $(document).ready(function() {
 
@@ -277,6 +362,7 @@
                 // Select the cart count element and update its text
                 $('.cart-count').text(cartCount); // Replace.cart-count with your actual class/selector
             }
+
         });
     </script>
 @endsection

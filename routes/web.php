@@ -69,6 +69,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/products/{product}/questions', [App\Http\Controllers\ProductQuestionController::class, 'store'])
         ->name('product.questions.store');
 
+    // ✅ Wishlist
+    Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/wishlist/check/{productId}', [App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');
+
     // ✅ Alamat Pengiriman
     Route::prefix('address')->name('address.')->group(function () {
         Route::get('/', [App\Http\Controllers\UserAddressController::class, 'index'])->name('index');
