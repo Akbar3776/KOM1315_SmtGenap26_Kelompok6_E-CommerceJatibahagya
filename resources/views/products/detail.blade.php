@@ -231,7 +231,8 @@
                                     </button>
                                     <button class="nav-link" id="nav-question-tab" data-bs-toggle="tab"
                                         data-bs-target="#nav-question" type="button" role="tab"
-                                        aria-controls="nav-question" aria-selected="false">Tanya Jawab (2)</button>
+                                        aria-controls="nav-question" aria-selected="false">Tanya Jawab
+                                        ({{ $product->questions->where('is_visible', true)->count() }})</button>
                                 </div>
                             </div>
                         </nav>
@@ -363,34 +364,77 @@
                         <div class="tab-pane fade" id="nav-question" role="tabpanel" aria-labelledby="nav-question-tab"
                             tabindex="0">
                             <div class="mt-2">
-                                <div class="mb-4">
-                                    <ul>
-                                        <li>Untuk pertanyaan mengenai
-                                            pengiriman/pembayaran/pembatalan/penukaran/pengembalian, bukan mengenai produk,
-                                            silakan gunakan Pusat Pelanggan > Pertanyaan 1:1 > Hubungi Kami.
-                                        </li>
-                                        <li>
-                                            Jika Anda mengunggahkan konten yang tidak pantas seperti fitnah, bahasa kasar,
-                                            atau pencemaran nama baik, ID Anda dapat dibatasi dan kiriman Anda dapat
-                                            dihapus.</li>
-                                        <li> Karena ada risiko informasi pribadi bocor ke ruang di mana orang lain selain
-                                            pengguna dapat melihatnya, kiriman yang berisi informasi pribadi dapat dihapus
-                                            tanpa pemberitahuan karena perlindungan privasi.</li>
-                                    </ul>
-                                </div>
-                                <div class="mb-4">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span class="text-muted">A*** S*******</span>
-                                            <span class="badge bg-dark ms-2">Sudah Dijawab</span>
-                                        </div>
-                                        <small class="text-muted">01 Mei 2025</small>
+                                <!-- Form Pertanyaan Baru -->
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Ajukan Pertanyaan</h5>
+                                        <form id="questionForm"
+                                            action="{{ route('product.questions.store', $product->id) }}" method="POST">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <textarea class="form-control" name="question" rows="3"
+                                                    placeholder="Tulis pertanyaan Anda tentang produk ini..." required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Kirim Pertanyaan</button>
+                                        </form>
                                     </div>
-                                    <hr class="my-2">
-                                    <p class="fw-bolder mb-1">Q: Apakah ukuran sofa ini muat untuk 3 orang?</p>
-                                    <p class="mb-0">Saya ingin memastikan apakah cukup nyaman untuk diduduki 3 orang
-                                        dewasa
-                                        secara bersamaan.</p>
+                                </div>
+
+                                <!-- Daftar Pertanyaan -->
+                                <div class="mb-4">
+                                    <h5>Pertanyaan dan Jawaban</h5>
+
+                                    @if ($product->questions->where('is_visible', true)->count() > 0)
+                                        @foreach ($product->questions->where('is_visible', true) as $question)
+                                            <div class="mb-4">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <span class="text-muted">
+                                                            {{ substr($question->user->name, 0, 1) }}***
+                                                            {{ substr($question->user->name, -1) }}***
+                                                        </span>
+                                                        @if ($question->answer)
+                                                            <span class="badge bg-dark ms-2">Sudah Dijawab</span>
+                                                        @else
+                                                            <span class="badge bg-secondary ms-2">Belum Dijawab</span>
+                                                        @endif
+                                                    </div>
+                                                    <small
+                                                        class="text-muted">{{ $question->created_at->format('d M Y') }}</small>
+                                                </div>
+
+                                                <hr class="my-2">
+
+                                                <p class="fw-bolder mb-1">Q: {{ $question->question }}</p>
+                                                @if (auth()->id() == $question->user_id)
+                                                    <small class="text-muted d-block mb-2">(Pertanyaan Anda)</small>
+                                                @endif
+
+                                                @if ($question->answer)
+                                                    <div class="bg-light p-3 rounded mt-2">
+                                                        <p class="fw-bolder mb-1">A: {{ $question->answer }}</p>
+                                                        <small class="text-muted">Dijawab oleh
+                                                            {{ $question->answerer->name ?? 'Admin' }}
+                                                            pada {{ $question->answered_at->format('d M Y') }}</small>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="alert alert-info">
+                                            Belum ada pertanyaan untuk produk ini.
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- Informasi -->
+                                <div class="alert alert-warning">
+                                    <ul class="mb-0">
+                                        <li>Untuk pertanyaan mengenai pengiriman/pembayaran, silakan hubungi Pusat Pelanggan
+                                        </li>
+                                        <li>Konten tidak pantas akan dihapus dan akun bisa dibatasi</li>
+                                        <li>Informasi pribadi akan dihapus untuk perlindungan privasi</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -679,4 +723,6 @@
             }
         });
     </script>
+
+    <script></script>
 @endsection

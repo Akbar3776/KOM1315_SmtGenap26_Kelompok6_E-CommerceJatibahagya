@@ -65,6 +65,10 @@ Route::middleware(['auth'])->group(function () {
     // ✅ Post Review
     Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
 
+    // ✅ Post Question
+    Route::post('/products/{product}/questions', [App\Http\Controllers\ProductQuestionController::class, 'store'])
+        ->name('product.questions.store');
+
     // ✅ Alamat Pengiriman
     Route::prefix('address')->name('address.')->group(function () {
         Route::get('/', [App\Http\Controllers\UserAddressController::class, 'index'])->name('index');

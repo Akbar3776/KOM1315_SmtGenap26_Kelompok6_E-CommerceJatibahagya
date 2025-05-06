@@ -97,4 +97,9 @@ class Product extends Model
             'empty' => $emptyStars
         ];
     }
+
+    public function questions()
+    {
+        return $this->hasMany(ProductQuestion::class);
+    }
 }
