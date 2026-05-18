@@ -3,6 +3,21 @@
 @section('content')
 
     <div class="container mt-4">
+
+        @if (request('category'))
+            @php
+                $category = $categories->firstWhere('id', request('category'));
+                $categorySlug = $category->slug ?? null;
+                $categoryImagePath = "images/{$categorySlug}.png";
+            @endphp
+
+            @if (File::exists(public_path($categoryImagePath)))
+                <div class="text-center mb-4 mt-2">
+                    <img src="{{ asset($categoryImagePath) }}" alt="{{ $category->name }}" class="img-fluid rounded">
+                </div>
+            @endif
+        @endif
+
         <h3 class="mb-3">Produk <span class="text-primary">Jati</span>Bahagya</h3>
 
         {{-- Form Filter dan Sorting --}}
@@ -113,6 +128,8 @@
 
         {{-- Daftar Produk --}}
         <div class="row">
+            <div class="col-12">
+            </div>
             @forelse ($products as $product)
                 <div class="col-12 col-md-3 mb-3" data-aos="fade-left" data-aos-duration="1000">
                     <div class="card shadow-sm h-100">

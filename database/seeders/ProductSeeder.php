@@ -19,27 +19,27 @@ class ProductSeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Kamar Tidur',
-                'image' => 'images/category-bedroom.png'
-            ],
-            [
                 'name' => 'Lemari',
                 'image' => 'images/category-cabinet.png'
             ],
             [
-                'name' => 'Ruang Tamu',
-                'image' => 'images/category-living-room.png'
-            ],
-            [
-                'name' => 'Dapur',
-                'image' => 'images/category-kitchen.png'
+                'name' => 'Kamar Tidur',
+                'image' => 'images/category-bedroom.png'
             ],
             [
                 'name' => 'Kamar Mandi',
                 'image' => 'images/category-bathroom.png'
             ],
             [
-                'name' => 'Kantor',
+                'name' => 'Ruang Tamu',
+                'image' => 'images/category-living-room.png'
+            ],
+            [
+                'name' => 'Ruang Dapur',
+                'image' => 'images/category-kitchen.png'
+            ],
+            [
+                'name' => 'Ruang Kantor',
                 'image' => 'images/category-office.png'
             ]
         ];
@@ -73,7 +73,7 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'MICKE Meja Kerja Minimalis',
                 'description' => 'MICKE adalah meja dengan desain yang sederhana dan tampilan baru, cocok diletakkan di berbagai ruangan. Dengan dimensi fleksibel dan warna modern.',
-                'category' => 'kantor',
+                'category' => 'ruang-kantor',
                 'image' => 'images/micke-black.jpg',
                 'discount' => 15, // Diskon 15%
                 'brand' => 'Jati Bahagya',
