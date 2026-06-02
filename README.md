@@ -8,6 +8,16 @@
   <img src="https://img.shields.io/badge/Bootstrap-5.x-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
   <img src="https://img.shields.io/badge/Vite-6.x-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
 </p>
+# E-Commerce Jatibahagya
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-11.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/Filament-3.x-FDAE4B?style=for-the-badge&logo=laravel&logoColor=white" alt="Filament">
+  <img src="https://img.shields.io/badge/TailwindCSS-3.x-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind">
+  <img src="https://img.shields.io/badge/Bootstrap-5.x-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
+  <img src="https://img.shields.io/badge/Vite-6.x-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
+</p>
 
 <p align="center">
   <strong>Proyek Tugas Akhir · KOM1315 Keamanan Informasi</strong><br>
@@ -92,7 +102,7 @@ Pastikan perangkat Anda memenuhi kebutuhan berikut sebelum instalasi:
 ### Langkah 1 - Clone Repositori
 
 ```bash
-git clone https://github.com/Akbar3776/KOM1315_SmtGenap26_Kelompok6_E-CommerceJatibahagya.git
+git clone https://github.com/<username>/KOM1315_SmtGenap26_Kelompok6_E-CommerceJatibahagya.git
 cd KOM1315_SmtGenap26_Kelompok6_E-CommerceJatibahagya/03_Source_Code
 ```
 
@@ -261,7 +271,6 @@ Implementasi keamanan sesuai protokol mata kuliah KOM1315:
 - **XSS Prevention** - Output di-escape secara otomatis oleh Blade templating
 - **Role-Based Access Control** - Multi-level: `super_admin`, `staff`, `customer_support`
 - **Session Security** - Session terenkripsi dengan driver database
-- **Digital Signature** - Data pesanan dan detailnya terjaga integritasnya
 
 ---
 
