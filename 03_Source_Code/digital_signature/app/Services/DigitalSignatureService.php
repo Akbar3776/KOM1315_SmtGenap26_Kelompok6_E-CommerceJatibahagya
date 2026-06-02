@@ -13,7 +13,7 @@ class DigitalSignatureService
         $privateKey = $privateKey ?? $this->getDefaultPrivateKey();
         $dataHash = $this->hashOrderData($data);
         $signature = $this->signData($dataHash, $privateKey);
-
+        
         return [
             'signature' => $signature,
             'data_hash' => $dataHash,
@@ -29,16 +29,13 @@ class DigitalSignatureService
         }
 
         $calculatedHash = $this->hashOrderData($orderData);
-
+        
         if (!hash_equals($calculatedHash, $signatureData['data_hash'])) {
             return false;
         }
-
-        return $this->verifySignedData(
-            $signatureData['data_hash'],
-            $signatureData['signature'],
-            $this->getDefaultPublicKey()
-        );
+        
+        $publicKey = $this->getDefaultPublicKey();
+        return $this->verifySignedData($signatureData['data_hash'], $signatureData['signature'], $publicKey);
     }
 
     public function hashOrderData(array $data): string
@@ -47,6 +44,49 @@ class DigitalSignatureService
         $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 
         return hash('sha256', $jsonData);
+    }
+
+    private function signData(string $data, string $privateKey): string
+    {
+        return hash_hmac('sha256', $data, $this->normalizeKey($privateKey));
+    }
+
+    private function verifySignedData(string $originalData, string $signature, string $publicKey): bool
+    {
+        $expectedSignature = hash_hmac('sha256', $originalData, $this->normalizeKey($publicKey));
+
+        if (hash_equals($expectedSignature, $signature)) {
+            return true;
+        }
+
+        try {
+            $decrypted = base64_decode($signature);
+            $decryptedData = Crypt::decryptString($decrypted);
+            $parts = explode('|', $decryptedData, 2);
+            if (count($parts) < 2) {
+                return false;
+            }
+            $storedOriginalData = $parts[0];
+            $storedKey = $parts[1];
+            return hash_equals($storedOriginalData, $originalData) && hash_equals($storedKey, $publicKey);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    public function generateSignatureId(): string
+    {
+        return 'SIG-' . strtoupper(Str::random(16)) . '-' . time();
+    }
+
+    private function getDefaultPrivateKey(): string
+    {
+        return env('APP_KEY', 'default-private-key-for-signing');
+    }
+
+    private function getDefaultPublicKey(): string
+    {
+        return env('APP_KEY', 'default-private-key-for-signing');
     }
 
     public function signOrder(Order $order): array
@@ -62,6 +102,12 @@ class DigitalSignatureService
             'signed_at' => $signatureResult['timestamp'],
             'order_data' => $orderData,
         ];
+    }
+
+    public function makeOrderData(
+        Order $order
+    ): array {
+        return $this->makeOrderDataFromOrder($order);
     }
 
     public function makeOrderDataFromOrder(Order $order, ?string $timestamp = null): array
@@ -101,49 +147,6 @@ class DigitalSignatureService
                 ])
                 ->all(),
         ];
-    }
-
-    public function generateSignatureId(): string
-    {
-        return 'SIG-' . strtoupper(Str::random(16)) . '-' . time();
-    }
-
-    private function signData(string $data, string $privateKey): string
-    {
-        return hash_hmac('sha256', $data, $this->normalizeKey($privateKey));
-    }
-
-    private function verifySignedData(string $originalData, string $signature, string $publicKey): bool
-    {
-        $expectedSignature = hash_hmac('sha256', $originalData, $this->normalizeKey($publicKey));
-
-        if (hash_equals($expectedSignature, $signature)) {
-            return true;
-        }
-
-        try {
-            $decrypted = base64_decode($signature);
-            $decryptedData = Crypt::decryptString($decrypted);
-            $parts = explode('|', $decryptedData, 2);
-
-            if (count($parts) < 2) {
-                return false;
-            }
-
-            return hash_equals($parts[0], $originalData) && hash_equals($parts[1], $publicKey);
-        } catch (\Throwable $e) {
-            return false;
-        }
-    }
-
-    private function getDefaultPrivateKey(): string
-    {
-        return env('APP_KEY', 'default-private-key-for-signing');
-    }
-
-    private function getDefaultPublicKey(): string
-    {
-        return env('APP_KEY', 'default-private-key-for-signing');
     }
 
     private function normalizeKey(string $key): string

@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('signature_id')->unique();
             $table->text('signature');
             $table->string('data_hash', 64);
+            $table->json('order_data')->nullable();
             $table->string('algorithm', 20)->default('SHA256');
             $table->timestamp('signed_at');
             $table->timestamp('verified_at')->nullable();
