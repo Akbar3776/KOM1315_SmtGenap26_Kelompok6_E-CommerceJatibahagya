@@ -56,6 +56,11 @@ class Order extends Model
         return $this->hasOne(Shipping::class);
     }
 
+    public function orderSignature()
+    {
+        return $this->hasOne(OrderSignature::class);
+    }
+
     /**
      * Menghitung total pembayaran.
      */

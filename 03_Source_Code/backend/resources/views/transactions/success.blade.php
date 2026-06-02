@@ -14,6 +14,16 @@
                 <h3 class="fw-bold text-success">Pesanan Berhasil!</h3>
                 <p class="text-muted">Terima kasih telah berbelanja. Pesanan Anda sedang diproses.</p>
 
+                @if (session('signature_id'))
+                    <div class="alert alert-info text-start mt-3">
+                        <div class="fw-semibold">ID Digital Signature</div>
+                        <div class="small text-break">{{ session('signature_id') }}</div>
+                        <a href="{{ route('signature.show', session('signature_id')) }}" class="btn btn-sm btn-outline-primary mt-2">
+                            Verifikasi Signature
+                        </a>
+                    </div>
+                @endif
+
                 <a href="{{ route('orders.index') }}" class="btn btn-primary w-100 mt-3">Kembali ke Daftar Pesanan</a>
             </div>
         </div>

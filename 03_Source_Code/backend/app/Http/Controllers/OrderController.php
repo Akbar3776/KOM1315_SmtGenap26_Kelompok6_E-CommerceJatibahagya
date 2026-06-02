@@ -6,8 +6,10 @@ use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderSignature;
 use App\Models\Shipping;
 use App\Models\UserAddress;
+use App\Services\DigitalSignatureService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -42,11 +44,21 @@ class OrderController extends Controller
         // Ambil user yang sedang login
         $user = Auth::user();
 
-        // Ambil alamat pengiriman berdasarkan ID yang dipilih
-        $address = UserAddress::find($request->address_id);
+        // Ambil alamat pengiriman berdasarkan ID yang dipilih dan pastikan milik user login
+        $address = UserAddress::where('id', $request->address_id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$address) {
+            return back()->withErrors('Alamat yang dipilih tidak valid.');
+        }
 
         // Ambil produk dalam keranjang
         $cartItems = Cart::with(['product', 'variant'])->where('user_id', $user->id)->get();
+
+        if ($cartItems->isEmpty()) {
+            return back()->withErrors('Keranjang masih kosong.');
+        }
 
         // Hitung total harga pesanan
         $total_order = $cartItems->sum(function ($item) {
@@ -137,11 +149,35 @@ class OrderController extends Controller
             // Hapus semua item dalam keranjang setelah checkout berhasil
             Cart::where('user_id', $user->id)->delete();
 
+            // Generate dan simpan digital signature untuk pesanan
+            $digitalSignatureService = new DigitalSignatureService();
+            $signatureData = $digitalSignatureService->signOrderData(
+                $order->id,
+                $order->amount,
+                $order->shipping_address,
+                (string) $user->id
+            );
+
+            // Simpan signature ke tabel order_signatures
+            $orderSignature = new OrderSignature();
+            $orderSignature->order_id = $order->id;
+            $orderSignature->signature_id = $signatureData['signature_id'];
+            $orderSignature->signature = $signatureData['signature'];
+            $orderSignature->data_hash = $signatureData['data_hash'];
+            $orderSignature->order_data = $signatureData['order_data'];
+            $orderSignature->algorithm = $signatureData['algorithm'];
+            $orderSignature->signed_at = $signatureData['signed_at'];
+            $orderSignature->ip_address = $request->ip();
+            $orderSignature->user_agent = Str::limit((string) $request->userAgent(), 255, '');
+            $orderSignature->save();
+
             // Commit transaksi database
             DB::commit();
 
             // Redirect ke halaman sukses dengan pesan berhasil
-            return redirect()->route('orders.success', ['order' => $order->id])->with('success', 'Pesanan berhasil dibuat!');
+            return redirect()->route('orders.success', ['order' => $order->id])
+                ->with('success', 'Pesanan berhasil dibuat!')
+                ->with('signature_id', $signatureData['signature_id']);
         } catch (\Exception $e) {
             DB::rollback(); // Batalkan transaksi
 
@@ -197,7 +233,7 @@ class OrderController extends Controller
         // Ambil pesanan berdasarkan ID dan user
         $order = Order::where('order_code', $id)
             ->where('user_id', $user->id)
-            ->with(['orderItems.product', 'orderItems.variant', 'userAddress'])
+            ->with(['orderItems.product', 'orderItems.variant', 'userAddress', 'orderSignature'])
             ->first();
 
         if (!$order) {

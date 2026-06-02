@@ -5,6 +5,7 @@ use App\Models\Regency;
 use App\Models\Village;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SignatureVerificationController;
 use App\Http\Controllers\Auth\VerificationController;
 
 Auth::routes();
@@ -18,6 +19,8 @@ Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name(
 Route::get('/contact', [App\Http\Controllers\LandingController::class, 'contact'])->name('contact');
 Route::get('/chat', [App\Http\Controllers\LandingController::class, 'chat'])->name('chat');
 
+Route::get('/signature/{signatureId}', [SignatureVerificationController::class, 'show'])->name('signature.show');
+Route::post('/signature/verify', [SignatureVerificationController::class, 'verify'])->name('signature.verify');
 
 // ✅ Produk
 Route::prefix('products')->name('products.')->group(function () {

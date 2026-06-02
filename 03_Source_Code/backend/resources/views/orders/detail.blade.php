@@ -106,6 +106,18 @@
                                                     </b>
                                                 </td>
                                             </tr>
+                                            @if ($order->orderSignature)
+                                                <tr>
+                                                    <th class="text-start">Digital Signature</th>
+                                                    <td>
+                                                        <span class="badge bg-info text-break">{{ $order->orderSignature->signature_id }}</span>
+                                                        <a href="{{ route('signature.show', $order->orderSignature->signature_id) }}"
+                                                            class="btn btn-sm btn-outline-primary ms-1">
+                                                            Verifikasi
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
