@@ -28,10 +28,6 @@ class OrderItem extends Model
         'total_price',
     ];
 
-    protected $casts = [
-        'options' => 'array',
-    ];
-
     public function order()
     {
         return $this->belongsTo(Order::class);

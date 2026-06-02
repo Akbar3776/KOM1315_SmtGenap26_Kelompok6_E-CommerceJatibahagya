@@ -32,9 +32,14 @@
                                     <th class="text-start">Order</th>
                                     <td>{{ $signature->order?->order_code ?? '#' . $signature->order_id }}</td>
                                 </tr>
+                                @php
+                                    $signedAmount = $signature->order_data['order']['amount']
+                                        ?? $signature->order_data['amount']
+                                        ?? 0;
+                                @endphp
                                 <tr>
                                     <th class="text-start">Total Pembayaran</th>
-                                    <td>Rp {{ number_format((float) ($signature->order_data['amount'] ?? 0), 0, ',', '.') }}</td>
+                                    <td>Rp {{ number_format((float) $signedAmount, 0, ',', '.') }}</td>
                                 </tr>
                                 <tr>
                                     <th class="text-start">Ditandatangani</th>

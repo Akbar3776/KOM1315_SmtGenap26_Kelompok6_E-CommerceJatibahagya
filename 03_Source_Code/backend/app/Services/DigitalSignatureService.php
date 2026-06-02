@@ -11,7 +11,6 @@ class DigitalSignatureService
     public function generateSignature(array $data, ?string $privateKey = null): array
     {
         $privateKey = $privateKey ?? $this->getDefaultPrivateKey();
-        $data['timestamp'] = $data['timestamp'] ?? now()->toIso8601String();
         $dataHash = $this->hashOrderData($data);
         $signature = $this->signData($dataHash, $privateKey);
         
@@ -19,7 +18,7 @@ class DigitalSignatureService
             'signature' => $signature,
             'data_hash' => $dataHash,
             'algorithm' => 'HMAC-SHA256',
-            'timestamp' => $data['timestamp'],
+            'timestamp' => now()->toIso8601String(),
         ];
     }
 
@@ -90,14 +89,11 @@ class DigitalSignatureService
         return env('APP_KEY', 'default-private-key-for-signing');
     }
 
-    public function signOrderData(int $orderId, float $amount, string $shippingAddress, string $userId): array
+    public function signOrder(Order $order): array
     {
-        $timestamp = now()->toIso8601String();
-
-        $orderData = $this->makeOrderData($orderId, $amount, $shippingAddress, $userId, $timestamp);
-        
+        $orderData = $this->makeOrderDataFromOrder($order);
         $signatureResult = $this->generateSignature($orderData);
-        
+
         return [
             'signature_id' => $this->generateSignatureId(),
             'signature' => $signatureResult['signature'],
@@ -109,30 +105,48 @@ class DigitalSignatureService
     }
 
     public function makeOrderData(
-        int $orderId,
-        float|string $amount,
-        ?string $shippingAddress,
-        int|string $userId,
-        ?string $timestamp = null
+        Order $order
     ): array {
-        return [
-            'order_id' => $orderId,
-            'amount' => number_format((float) $amount, 2, '.', ''),
-            'shipping_address' => (string) $shippingAddress,
-            'user_id' => (string) $userId,
-            'timestamp' => $timestamp ?? now()->toIso8601String(),
-        ];
+        return $this->makeOrderDataFromOrder($order);
     }
 
     public function makeOrderDataFromOrder(Order $order, ?string $timestamp = null): array
     {
-        return $this->makeOrderData(
-            $order->id,
-            $order->amount,
-            $order->shipping_address,
-            $order->user_id,
-            $timestamp
-        );
+        unset($timestamp);
+
+        $order->loadMissing('orderItems');
+
+        return [
+            'order' => [
+                'order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'address_id' => $order->user_address_id,
+                'order_code' => (string) $order->order_code,
+                'total_order' => $this->formatMoney($order->total_order),
+                'total_shipping' => $this->formatMoney($order->total_shipping),
+                'total_fee' => $this->formatMoney($order->total_fee),
+                'amount' => $this->formatMoney($order->amount),
+                'shipping_address' => (string) $order->shipping_address,
+                'notes' => $order->notes,
+                'created_at' => $this->formatDateTime($order->created_at),
+            ],
+            'order_items' => $order->orderItems
+                ->sortBy([
+                    ['created_at', 'asc'],
+                    ['product_id', 'asc'],
+                    ['variant_id', 'asc'],
+                ])
+                ->values()
+                ->map(fn ($item) => [
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price_per_item' => $this->formatMoney($item->price_per_item),
+                    'total_price' => $this->formatMoney($item->total_price),
+                    'created_at' => $this->formatDateTime($item->created_at),
+                    'variant_id' => $item->variant_id,
+                ])
+                ->all(),
+        ];
     }
 
     private function normalizeKey(string $key): string
@@ -158,4 +172,15 @@ class DigitalSignatureService
 
         ksort($data);
     }
+
+    private function formatMoney(float|string|null $value): string
+    {
+        return number_format((float) $value, 2, '.', '');
+    }
+
+    private function formatDateTime($value): ?string
+    {
+        return $value?->toIso8601String();
+    }
+
 }

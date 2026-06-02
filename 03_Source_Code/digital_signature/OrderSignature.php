@@ -11,6 +11,7 @@ class OrderSignature extends Model
         'signature_id',
         'signature',
         'data_hash',
+        'order_data',
         'algorithm',
         'signed_at',
         'verified_at',
@@ -19,6 +20,7 @@ class OrderSignature extends Model
     ];
 
     protected $casts = [
+        'order_data' => 'array',
         'signed_at' => 'datetime',
         'verified_at' => 'datetime',
     ];

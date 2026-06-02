@@ -106,7 +106,6 @@ class OrderController extends Controller
                     'quantity' => $cartItem->quantity,
                     'price_per_item' => $cartItem->price ?? $cartItem->product->price,
                     'total_price' => $cartItem->quantity * ($cartItem->price ?? $cartItem->product->price),
-                    'options' => $cartItem->variant ? $cartItem->variant->attributeValues->pluck('pivot.value', 'name') : null,
                 ];
 
                 OrderItem::create($orderItemData);
@@ -151,12 +150,8 @@ class OrderController extends Controller
 
             // Generate dan simpan digital signature untuk pesanan
             $digitalSignatureService = new DigitalSignatureService();
-            $signatureData = $digitalSignatureService->signOrderData(
-                $order->id,
-                $order->amount,
-                $order->shipping_address,
-                (string) $user->id
-            );
+            $order->load('orderItems');
+            $signatureData = $digitalSignatureService->signOrder($order);
 
             // Simpan signature ke tabel order_signatures
             $orderSignature = new OrderSignature();
