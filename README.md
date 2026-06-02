@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <strong>Proyek Tugas Akhir · KOM1315 Keamanan Jaringan Komputer</strong><br>
+  <strong>Proyek Tugas Akhir · KOM1315 Keamanan Informasi</strong><br>
   Semester Genap 2025/2026 · Kelompok 6
 </p>
 
@@ -20,7 +20,7 @@
 
 **E-Commerce Jatibahagya** adalah platform belanja online berbasis web yang dibangun menggunakan framework **Laravel 11** dengan implementasi fitur keamanan meliputi enkripsi data, hashing & salting password, verifikasi OTP, serta autentikasi multi-level (AAA - Authentication, Authorization, Accounting).
 
-Proyek ini dikembangkan sebagai luaran mata kuliah **KOM1315 - Keamanan Jaringan Komputer** dengan fokus pada aspek keamanan sistem e-commerce mulai dari manajemen kunci kriptografi, komunikasi aman, hingga non-repudiation melalui digital signature.
+Proyek ini dikembangkan sebagai luaran mata kuliah **KOM1315 - Keamanan Informasi** dengan fokus pada aspek keamanan sistem e-commerce mulai dari manajemen kunci kriptografi, komunikasi aman, hingga non-repudiation melalui digital signature.
 
 ### Fitur Utama
 
@@ -271,7 +271,7 @@ Implementasi keamanan sesuai protokol mata kuliah KOM1315:
 | *Muhammad Fauzan Akbar* | *G6401231045* | Integrator, QA (Pengujian), & Technical Writer |
 | *Muhammad Syafiq Romadhon* | *G6401231079* | Kriptografer (Enkripsi & Digital Signature) |
 
-> **Mata Kuliah:** KOM1315 - Keamanan Jaringan Komputer  
+> **Mata Kuliah:** KOM1315 - Keamanan Informasi  
 > **Institusi:** *Institute Pertanian Bogor*  
 > **Semester:** Genap 2025/2026
 
@@ -279,8 +279,8 @@ Implementasi keamanan sesuai protokol mata kuliah KOM1315:
 
 ## Lisensi
 
-Proyek ini dikembangkan untuk keperluan akademis. Seluruh hak cipta dimiliki oleh tim Kelompok 6 KOM1315 Semester Genap 2025/2026.
+Proyek ini dikembangkan untuk keperluan akademis. Seluruh hak cipta dimiliki oleh tim Kelompok 6 KOM1315 - Keamanan Informasi Semester Genap 2025/2026.
 
 ---
 
-<p align="center">Dibuat dengan sepenuh hati oleh <strong>Kelompok 6 KOM1315</strong></p>
+<p align="center">Dibuat dengan sepenuh hati oleh <strong>Kelompok 6 KOM1315 - Keamanan Informasi</strong></p>
