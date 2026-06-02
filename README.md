@@ -24,18 +24,18 @@ Proyek ini dikembangkan sebagai luaran mata kuliah **KOM1315 - Keamanan Informas
 
 ### Fitur Utama
 
-| Fitur | Keterangan |
-|---|---|
-| Autentikasi & Verifikasi OTP | Registrasi dengan verifikasi email via kode OTP |
-| Keranjang Belanja | Mendukung produk dengan varian (warna, ukuran, dll.) |
-| Wishlist | Simpan produk favorit |
-| Manajemen Produk | Kategori hierarki, merek, atribut & varian produk |
-| Kupon Diskon | Tipe persentase dan nominal tetap |
-| Pembayaran | Integrasi manajemen transaksi & status pembayaran |
-| Pengiriman | Tracking pengiriman dengan estimasi waktu |
-| Ulasan & Q&A | Review produk dan tanya jawab dengan admin |
-| Wilayah Indonesia | Provinsi, kabupaten, kecamatan, desa (IndoRegion) |
-| Panel Admin | Berbasis Filament 3 dengan manajemen multi-peran |
+| Fitur                        | Keterangan                                           |
+| ---------------------------- | ---------------------------------------------------- |
+| Autentikasi & Verifikasi OTP | Registrasi dengan verifikasi email via kode OTP      |
+| Keranjang Belanja            | Mendukung produk dengan varian (warna, ukuran, dll.) |
+| Wishlist                     | Simpan produk favorit                                |
+| Manajemen Produk             | Kategori hierarki, merek, atribut & varian produk    |
+| Kupon Diskon                 | Tipe persentase dan nominal tetap                    |
+| Pembayaran                   | Integrasi manajemen transaksi & status pembayaran    |
+| Pengiriman                   | Tracking pengiriman dengan estimasi waktu            |
+| Ulasan & Q&A                 | Review produk dan tanya jawab dengan admin           |
+| Wilayah Indonesia            | Provinsi, kabupaten, kecamatan, desa (IndoRegion)    |
+| Panel Admin                  | Berbasis Filament 3 dengan manajemen multi-peran     |
 
 ### Arsitektur & Tech Stack
 
@@ -76,14 +76,14 @@ KOM1315_SmtGenap26_Kelompok6_E-CommerceJatibahagya/
 
 Pastikan perangkat Anda memenuhi kebutuhan berikut sebelum instalasi:
 
-| Kebutuhan | Versi Minimum |
-|---|---|
-| PHP | 8.2 atau lebih baru |
-| Composer | 2.x |
-| Node.js | 18.x atau lebih baru |
-| NPM | 9.x atau lebih baru |
-| MySQL | 8.0+ (atau SQLite untuk dev) |
-| Git | Versi terbaru |
+| Kebutuhan | Versi Minimum                |
+| --------- | ---------------------------- |
+| PHP       | 8.2 atau lebih baru          |
+| Composer  | 2.x                          |
+| Node.js   | 18.x atau lebih baru         |
+| NPM       | 9.x atau lebih baru          |
+| MySQL     | 8.0+ (atau SQLite untuk dev) |
+| Git       | Versi terbaru                |
 
 ---
 
@@ -92,7 +92,7 @@ Pastikan perangkat Anda memenuhi kebutuhan berikut sebelum instalasi:
 ### Langkah 1 - Clone Repositori
 
 ```bash
-git clone https://github.com/<username>/KOM1315_SmtGenap26_Kelompok6_E-CommerceJatibahagya.git
+git clone https://github.com/Akbar3776/KOM1315_SmtGenap26_Kelompok6_E-CommerceJatibahagya.git
 cd KOM1315_SmtGenap26_Kelompok6_E-CommerceJatibahagya/03_Source_Code
 ```
 
@@ -211,6 +211,7 @@ composer run dev
 ```
 
 Perintah ini akan menjalankan:
+
 - `php artisan serve` - Web server
 - `php artisan queue:listen` - Background job processor
 - `php artisan pail` - Log viewer
@@ -236,16 +237,16 @@ Ikuti prompt untuk mengisi nama, email, dan password.
 
 Proyek menggunakan **18 tabel utama**. Lihat ERD lengkap di:
 
-[`02_Design_Documents/ERD_Modified.png`](02_Design_Documents/ERD_Modified.png) *(buka di browser)*
+[`02_Design_Documents/ERD_Modified.png`](02_Design_Documents/ERD_Modified.png) _(buka di browser)_
 
-| Kelompok | Tabel |
-|---|---|
-| Pengguna & Auth | `users`, `user_addresses`, `admins` |
-| Transaksi | `orders`, `order_items`, `payments`, `shippings`, `coupons` |
-| Produk | `products`, `categories`, `brands`, `attributes`, `attribute_values`, `product_variants`, `product_variant_values` |
-| Sosial | `carts`, `wishlists`, `reviews`, `product_questions` |
-| Wilayah | `provinces`, `regencies`, `districts`, `villages` |
-| Sistem | `settings` |
+| Kelompok        | Tabel                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Pengguna & Auth | `users`, `user_addresses`, `admins`                                                                                |
+| Transaksi       | `orders`, `order_items`, `payments`, `shippings`, `coupons`                                                        |
+| Produk          | `products`, `categories`, `brands`, `attributes`, `attribute_values`, `product_variants`, `product_variant_values` |
+| Sosial          | `carts`, `wishlists`, `reviews`, `product_questions`                                                               |
+| Wilayah         | `provinces`, `regencies`, `districts`, `villages`                                                                  |
+| Sistem          | `settings`                                                                                                         |
 
 ---
 
@@ -260,19 +261,20 @@ Implementasi keamanan sesuai protokol mata kuliah KOM1315:
 - **XSS Prevention** - Output di-escape secara otomatis oleh Blade templating
 - **Role-Based Access Control** - Multi-level: `super_admin`, `staff`, `customer_support`
 - **Session Security** - Session terenkripsi dengan driver database
+- **Digital Signature** - Data pesanan dan detailnya terjaga integritasnya
 
 ---
 
 ## Tim Pengembang
 
-| Nama | NIM | Peran |
-|---|---|---|
-| *Taura Mohamad Inzaghi* | *G6401231019* | Backend & Akses Keamanan (AAA) |
-| *Muhammad Fauzan Akbar* | *G6401231045* | Integrator, QA (Pengujian), & Technical Writer |
-| *Muhammad Syafiq Romadhon* | *G6401231079* | Kriptografer (Enkripsi & Digital Signature) |
+| Nama                       | NIM           | Peran                                          |
+| -------------------------- | ------------- | ---------------------------------------------- |
+| _Taura Mohamad Inzaghi_    | _G6401231019_ | Backend & Akses Keamanan (AAA)                 |
+| _Muhammad Fauzan Akbar_    | _G6401231045_ | Integrator, QA (Pengujian), & Technical Writer |
+| _Muhammad Syafiq Romadhon_ | _G6401231079_ | Kriptografer (Enkripsi & Digital Signature)    |
 
 > **Mata Kuliah:** KOM1315 - Keamanan Informasi  
-> **Institusi:** *Institute Pertanian Bogor*  
+> **Institusi:** _Institute Pertanian Bogor_  
 > **Semester:** Genap 2025/2026
 
 ---
