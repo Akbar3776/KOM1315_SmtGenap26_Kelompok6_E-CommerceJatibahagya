@@ -236,7 +236,7 @@ Ikuti prompt untuk mengisi nama, email, dan password.
 
 Proyek menggunakan **18 tabel utama**. Lihat ERD lengkap di:
 
-[`02_Design_Documents/ERD_Modified.html`](02_Design_Documents/ERD_Modified.html) *(buka di browser)*
+[`02_Design_Documents/ERD_Modified.png`](02_Design_Documents/ERD_Modified.png) *(buka di browser)*
 
 | Kelompok | Tabel |
 |---|---|
