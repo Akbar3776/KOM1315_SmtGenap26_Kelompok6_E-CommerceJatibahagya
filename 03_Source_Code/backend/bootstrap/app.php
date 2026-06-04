@@ -15,9 +15,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\CheckVerified::class,
         ]);
 
-        // Atau sebagai alias middleware
+        // Middleware aliases
         $middleware->alias([
             'verified' => \App\Http\Middleware\CheckVerified::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

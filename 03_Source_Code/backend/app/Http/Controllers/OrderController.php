@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSignature;
+use App\Models\InvoiceSignature;
 use App\Models\Shipping;
 use App\Models\UserAddress;
 use App\Services\DigitalSignatureService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -148,7 +150,7 @@ class OrderController extends Controller
             // Hapus semua item dalam keranjang setelah checkout berhasil
             Cart::where('user_id', $user->id)->delete();
 
-            // Generate dan simpan digital signature untuk pesanan
+            // Generate dan simpan digital signature untuk pesanan (old OrderSignature)
             $digitalSignatureService = new DigitalSignatureService();
             $order->load('orderItems');
             $signatureData = $digitalSignatureService->signOrder($order);
@@ -156,15 +158,23 @@ class OrderController extends Controller
             // Simpan signature ke tabel order_signatures
             $orderSignature = new OrderSignature();
             $orderSignature->order_id = $order->id;
-            $orderSignature->signature_id = $signatureData['signature_id'];
+            $orderSignature->signature_id = $signatureData['signature_id'] ?? 'SIG-' . strtoupper(Str::random(16)) . '-' . time();
             $orderSignature->signature = $signatureData['signature'];
-            $orderSignature->data_hash = $signatureData['data_hash'];
+            $orderSignature->data_hash = $signatureData['data_hash'] ?? $signatureData['hash_value'];
             $orderSignature->order_data = $signatureData['order_data'];
             $orderSignature->algorithm = $signatureData['algorithm'];
-            $orderSignature->signed_at = $signatureData['signed_at'];
+            $orderSignature->signed_at = now();
             $orderSignature->ip_address = $request->ip();
             $orderSignature->user_agent = Str::limit((string) $request->userAgent(), 255, '');
             $orderSignature->save();
+
+            // Generate Invoice Signature untuk PDF Invoice (RSA-SHA256)
+            try {
+                $invoiceSignature = $digitalSignatureService->createOrUpdateInvoiceSignature($order, null);
+            } catch (\Exception $e) {
+                // Log error but don't fail checkout
+                Log::warning('Failed to create invoice signature: ' . $e->getMessage());
+            }
 
             // Commit transaksi database
             DB::commit();

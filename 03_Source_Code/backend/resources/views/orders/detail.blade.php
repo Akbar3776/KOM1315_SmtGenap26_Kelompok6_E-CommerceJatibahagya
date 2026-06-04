@@ -308,6 +308,11 @@
 
                         <!-- Tombol Aksi -->
                         <div class="mt-4">
+                            {{-- Download Invoice PDF Button --}}
+                            <a href="{{ route('orders.invoice.download', $order->id) }}" class="btn btn-primary">
+                                <i class="fas fa-file-pdf"></i> Download Invoice PDF
+                            </a>
+
                             @if ($order->status == 'pending')
                                 <form action="{{ route('orders.cancel', $order->id) }}" method="POST" class="d-inline">
                                     @csrf

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SignatureVerificationController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceVerificationController;
 
 Auth::routes();
 
@@ -21,6 +23,10 @@ Route::get('/chat', [App\Http\Controllers\LandingController::class, 'chat'])->na
 
 Route::get('/signature/{signatureId}', [SignatureVerificationController::class, 'show'])->name('signature.show');
 Route::post('/signature/verify', [SignatureVerificationController::class, 'verify'])->name('signature.verify');
+
+// ✅ Invoice Verification (Public Routes)
+Route::get('/verify-invoice/{id}', [InvoiceVerificationController::class, 'show'])->name('invoices.verify');
+Route::post('/verify-invoice/{id}', [InvoiceVerificationController::class, 'verify'])->name('invoices.verify.api');
 
 // ✅ Produk
 Route::prefix('products')->name('products.')->group(function () {
@@ -53,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}', [App\Http\Controllers\OrderController::class, 'getOrderDetail'])->name('detail');
         Route::post('/{id}/cancel', [App\Http\Controllers\OrderController::class, 'cancelOrder'])->name('cancel');
         Route::get('/success/{order}', [App\Http\Controllers\OrderController::class, 'success'])->name('success');
+        
+        // ✅ Download Invoice PDF
+        Route::get('/{id}/invoice', [InvoiceController::class, 'download'])->name('invoice.download');
+        Route::post('/{id}/resign', [InvoiceController::class, 'regenerateSignature'])->name('invoice.resign')->middleware('admin');
     });
 
     // ✅ Profil & Akun Pengguna
