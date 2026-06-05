@@ -8,8 +8,6 @@ use App\Services\DigitalSignatureService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
 
 class InvoiceController extends Controller
 {
@@ -47,10 +45,9 @@ class InvoiceController extends Controller
             $invoiceSignature = $this->digitalSignatureService->createOrUpdateInvoiceSignature($order, $adminId);
         }
 
-        // Generate QR code with ONLY invoice_signature_id
-        // Verification flow: QR -> invoice_signature_id -> get order data -> hash -> verify RSA signature
-        $qrPayload = (string) $invoiceSignature->id;
-        $qrImage = $this->generateQrCode($qrPayload);
+        // Generate QR code with verification URL
+        $verificationUrl = url('/verify-invoice/' . $invoiceSignature->id);
+        $qrImage = $this->generateQrCode($verificationUrl);
 
         // Prepare order data for PDF
         $orderData = $this->digitalSignatureService->makeOrderDataFromOrder($order);
@@ -67,6 +64,7 @@ class InvoiceController extends Controller
             'orderData' => $orderData,
             'invoiceSignature' => $invoiceSignature,
             'qrImage' => $qrImage,
+            'verificationUrl' => $verificationUrl,
             'storeName' => $storeName,
             'storeAddress' => $storeAddress,
             'storePhone' => $storePhone,
@@ -82,23 +80,39 @@ class InvoiceController extends Controller
 
     /**
      * Generate QR code as base64 encoded PNG
-     * QR contains only: invoice_signature_id
+     * Uses Google Charts API for simplicity and compatibility
+     * Fallback: Returns a placeholder if generation fails
      */
-    private function generateQrCode(string $data): string
+    private function generateQrCode(string $url): string
     {
-        $qrCode = new QrCode($data);
-        $qrCode->setSize(200);
-        $qrCode->setMargin(10);
-        $qrCode->setErrorCorrectionLevel('H');
+        try {
+            // Try using Google Charts API (most reliable, no dependencies)
+            $encodedUrl = urlencode($url);
+            $googleChartsUrl = "https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl={$encodedUrl}";
+            
+            // Fetch and convert to base64
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 5,
+                    'user_agent' => 'Mozilla/5.0'
+                ]
+            ]);
+            
+            $imageData = @file_get_contents($googleChartsUrl, false, $context);
+            
+            if ($imageData !== false && strlen($imageData) > 100) {
+                return 'data:image/png;base64,' . base64_encode($imageData);
+            }
+        } catch (\Exception $e) {
+            // Fall through to fallback
+        }
 
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-
-        return 'data:image/png;base64,' . base64_encode($result->getString());
+        // Final fallback: Return empty string, view will show URL text
+        return '';
     }
 
-    /**
-     * Generate invoice signature for an order (re-sign)
+    /*
+      Generate invoice signature for an order (re-sign)
      */
     public function regenerateSignature(Request $request, $orderId)
     {

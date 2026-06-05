@@ -53,6 +53,7 @@
         .qr-section img { width: 150px; height: 150px; }
         .qr-label { font-size: 10px; color: #666; margin-top: 8px; }
         .qr-label strong { color: #333; }
+        .verification-url { font-size: 11px; color: #1a5f7a; word-break: break-all; margin-top: 10px; }
         .invoice-footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #eee; text-align: center; font-size: 9px; color: #999; }
         .mt-10 { margin-top: 10px; }
         .verification-flow { font-size: 10px; color: #666; margin-top: 5px; }
@@ -227,13 +228,14 @@
             </div>
 
             <div class="qr-section">
-                <img src="{{ $qrImage }}" alt="QR Code">
+                @if($qrImage)
+                    <img src="{{ $qrImage }}" alt="QR Code Verifikasi">
+                @endif
                 <div class="qr-label">
-                    <strong>Pindai QR Code untuk verifikasi invoice</strong><br>
-                    <small>Invoice Signature ID: {{ $invoiceSignature->id }}</small>
-                    <div class="verification-flow">
-                        Alur verifikasi: QR -> Invoice Signature ID -> Ambil Data Order -> Hash Ulang -> Verifikasi RSA Signature -> VALID/INVALID
-                    </div>
+                    <strong>Pindai QR Code untuk verifikasi invoice</strong>
+                </div>
+                <div class="verification-url">
+                    Atau buka link: <strong>{{ $verificationUrl }}</strong>
                 </div>
             </div>
         </div>
