@@ -1,0 +1,26 @@
+LOG PENGUJIAN: Autentikasi plaintext vs encrypted payload (simulasi base64 encode/decode)
+
+Perintah:
+- cd 03_Source_Code/backend
+- php artisan test --filter=AuthEncryptionPerformanceTest
+
+Hasil ringkas (avg per skenario):
+- Kueri 1 (Pendek: < 50 Karakter)
+  Plaintext avg (ms): 0.942
+  Encrypted avg (ms): 0.968
+  Overhead (%): 2.73
+
+- Kueri 2 (Sedang: 50 - 200 Karakter)
+  Plaintext avg (ms): 0.938
+  Encrypted avg (ms): 0.986
+  Overhead (%): 5.16
+
+- Kueri 3 (Panjang: > 200 Karakter)
+  Plaintext avg (ms): 1.049
+  Encrypted avg (ms): 1.068
+  Overhead (%): 1.87
+
+Catatan:
+- Overhead dihitung menggunakan rumus:
+  Overhead (%) = ((T_enkripsi - T_plaintext)/T_plaintext) * 100%
+
