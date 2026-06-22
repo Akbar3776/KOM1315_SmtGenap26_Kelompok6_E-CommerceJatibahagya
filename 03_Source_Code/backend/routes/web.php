@@ -65,6 +65,13 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/password/update', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
     });
 
+    // Backwards-compatible address endpoints used by tests
+    Route::prefix('account')->group(function () {
+        Route::post('/addresses', [App\Http\Controllers\UserAddressController::class, 'store']);
+        Route::put('/addresses/{address}', [App\Http\Controllers\UserAddressController::class, 'update']);
+        Route::delete('/addresses/{address}', [App\Http\Controllers\UserAddressController::class, 'destroy']);
+    });
+
     // ✅ Post Review
     Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
 

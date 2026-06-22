@@ -13,45 +13,41 @@ class AddressTest extends TestCase
 
     public function test_user_can_add_address()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_verified' => true, 'email_verified_at' => now()]);
 
         $payload = [
-            'label' => 'Home',
-            'recipient_name' => 'Test User',
-            'phone' => '081234567890',
-            'address' => 'Jl. Contoh No.1',
             'province_id' => 1,
-            'city_id' => 1,
+            'regency_id' => 1,
+            'district_id' => 1,
+            'village_id' => 1,
+            'full_address' => 'Jl. Contoh No.1',
             'postal_code' => '12345',
         ];
 
         $response = $this->actingAs($user)->post('/account/addresses', $payload);
-
         $response->assertStatus(302); // adjust if your app returns 200/JSON
 
         $this->assertDatabaseHas('user_addresses', [
             'user_id' => $user->id,
-            'label' => 'Home',
-            'recipient_name' => 'Test User',
+            'full_address' => 'Jl. Contoh No.1',
         ]);
     }
 
     public function test_address_validation_update_and_delete()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_verified' => true, 'email_verified_at' => now()]);
 
         // Validation: missing required fields
         $response = $this->actingAs($user)->post('/account/addresses', []);
-        $response->assertSessionHasErrors(['label', 'recipient_name', 'address']);
+        $response->assertSessionHasErrors(['province_id', 'regency_id', 'district_id', 'village_id', 'full_address']);
 
         // Create an address (via controller) to update/delete
         $createPayload = [
-            'label' => 'Office',
-            'recipient_name' => 'Office User',
-            'phone' => '081234000000',
-            'address' => 'Jl. Office No.2',
             'province_id' => 1,
-            'city_id' => 1,
+            'regency_id' => 1,
+            'district_id' => 1,
+            'village_id' => 1,
+            'full_address' => 'Jl. Office No.2',
             'postal_code' => '54321',
         ];
         $this->actingAs($user)->post('/account/addresses', $createPayload);
@@ -60,17 +56,18 @@ class AddressTest extends TestCase
 
         // Update address
         $updatePayload = [
-            'label' => 'Office Updated',
-            'recipient_name' => 'Office User Updated',
-            'phone' => '081234999999',
-            'address' => 'Jl. Office No.22',
+            'province_id' => 1,
+            'regency_id' => 1,
+            'district_id' => 1,
+            'village_id' => 1,
+            'full_address' => 'Jl. Office No.22',
+            'postal_code' => '54321',
         ];
         $updateResponse = $this->actingAs($user)->put('/account/addresses/' . $address->id, $updatePayload);
         $updateResponse->assertStatus(302);
         $this->assertDatabaseHas('user_addresses', [
             'id' => $address->id,
-            'label' => 'Office Updated',
-            'recipient_name' => 'Office User Updated',
+            'full_address' => 'Jl. Office No.22',
         ]);
 
         // Delete address

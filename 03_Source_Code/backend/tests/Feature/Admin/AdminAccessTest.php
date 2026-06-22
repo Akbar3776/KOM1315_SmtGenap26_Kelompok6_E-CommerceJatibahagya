@@ -12,7 +12,7 @@ class AdminAccessTest extends TestCase
 
     public function test_non_admin_cannot_access_admin_panel()
     {
-        $user = User::factory()->create(['role' => 'user']);
+        $user = User::factory()->create(['role' => 'customer']);
 
         $response = $this->actingAs($user)->get('/admin');
 

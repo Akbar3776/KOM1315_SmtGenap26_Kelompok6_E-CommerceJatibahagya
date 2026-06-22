@@ -26,7 +26,7 @@ class ProductController extends Controller
         // Ambil query filter dari request
         $categoryId = $request->input('category');
         $brandId = $request->input('brand');
-        $sortBy = $request->input('sort_by');
+        $sortBy = $request->input('sort_by') ?? $request->input('sort');
         $search = $request->input('search');
         $isDiscount = $request->boolean('is_discount'); // Menggunakan boolean() untuk konversi otomatis
 
@@ -61,7 +61,7 @@ class ProductController extends Controller
             });
         }
 
-        // Sorting produk
+        // Sorting produk (support both `sort_by` and `sort` query params)
         if ($sortBy == 'name_asc') {
             $query->orderBy('name', 'asc');
         } elseif ($sortBy == 'name_desc') {
@@ -72,7 +72,21 @@ class ProductController extends Controller
             $query->orderBy('price', 'desc');
         }
 
-        $products = $query->paginate(8);
+        $perPage = (int) $request->input('per_page', 15);
+        $products = $query->paginate($perPage);
+
+        if ($request->wantsJson()) {
+            $arr = $products->toArray();
+            return response()->json([
+                'data' => $arr['data'] ?? [],
+                'links' => $arr['links'] ?? [],
+                'meta' => [
+                    'per_page' => $arr['per_page'] ?? $products->perPage(),
+                    'current_page' => $arr['current_page'] ?? $products->currentPage(),
+                    'total' => $arr['total'] ?? $products->total(),
+                ],
+            ]);
+        }
 
         return view('products.index', compact('products', 'categories', 'brands'));
     }
@@ -85,7 +99,7 @@ class ProductController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException Jika produk tidak ditemukan.
      */
-    public function getDetail(int $productId): View
+    public function getDetail(Request $request, int $productId)
     {
         $product = Product::with(['attributes.values', 'variants.attributeValues'])
             ->findOrFail($productId);
@@ -116,6 +130,18 @@ class ProductController extends Controller
                 ];
             })
         ];
+
+        if ($request->wantsJson()) {
+            $category = $product->category;
+            return response()->json([
+                'id' => $product->id,
+                'name' => $product->name,
+                'slug' => property_exists($product, 'slug') ? $product->slug : null,
+                'price' => (float) $product->price,
+                'description' => $product->description,
+                'category' => $category ? ['id' => $category->id, 'name' => $category->name] : null,
+            ]);
+        }
 
         return view('products.detail', [
             'product' => $product,
