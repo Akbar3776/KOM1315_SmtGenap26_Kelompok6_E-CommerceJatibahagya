@@ -60,7 +60,7 @@ Pengujian dilakukan pada lingkungan lokal sebagai berikut:
 
 \[\text{Overhead (\%)} = \frac{T_{enkripsi} - T_{plaintext}}{T_{plaintext}} \times 100\%\]
 
-**\[MASUKKAN PEMBAHASAN TABEL DI SINI: Contoh: "Berdasarkan Tabel 1, terlihat bahwa overhead yang ditimbulkan oleh AES dibandingkan plaintext menunjukkan adanya tambahan waktu pemrosesan. Namun, total latensi rata-rata yang dihasilkan masih berada di bawah batas toleransi sehingga kualitas komunikasi real-time tidak terganggu."\]**
+Berdasarkan data pada Tabel 1, terlihat bahwa implementasi enkripsi AES memberikan tambahan waktu pemrosesan (overhead) yang sangat kecil dibandingkan dengan pemrosesan dalam bentuk plaintext. Persentase overhead tertinggi tercatat pada Kueri 2 (ukuran karakter sedang) yaitu sebesar 5.16%. Meskipun demikian, selisih waktu absolut yang terjadi sangatlah tipis, yakni hanya 0.048 ms. Secara keseluruhan, latensi rata-rata yang dihasilkan oleh sistem, baik dengan maupun tanpa enkripsi, tetap stabil di kisaran angka 1 milidetik (ms). Hal ini membuktikan bahwa proses komputasi kriptografi menggunakan algoritma AES sangat efisien dan tidak membebani kinerja perangkat server secara signifikan. Beban overhead ini berada jauh di bawah batas ambang toleransi sistem berbasis real-time, sehingga interaksi pengguna, khususnya pada fitur pertukaran pesan (chat), tetap responsif tanpa mengorbankan privasi dan integritas data.
 
 ## **Simpulan**
 
